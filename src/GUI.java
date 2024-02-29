@@ -51,10 +51,26 @@ public class GUI {
         frame.add(passwordTextField, constraint);
 
         constraint.gridx = 3;
-        JButton loginButton = new JButton("Enter");
+        JButton loginButton = new JButton("Login");
         frame.add(loginButton, constraint);
 
-        //once the button is pressed its gonna check the username and password entered against the db
+        GridBagConstraints signUpLabelConstraint = new GridBagConstraints();
+        signUpLabelConstraint.gridx = -1;
+        signUpLabelConstraint.gridy = 2;
+        signUpLabelConstraint.gridwidth = 3;
+        signUpLabelConstraint.anchor = GridBagConstraints.WEST;
+        JLabel signUpLabel = new JLabel("Sign up here: ");
+        frame.add(signUpLabel, signUpLabelConstraint);
+
+        GridBagConstraints signUpButtonConstraint = new GridBagConstraints();
+        signUpButtonConstraint.gridx = -1;
+        signUpButtonConstraint.gridy = 3;
+        signUpButtonConstraint.gridwidth = 3;
+        signUpButtonConstraint.anchor = GridBagConstraints.WEST;
+        JButton signupButton = new JButton("Sign up");
+        frame.add(signupButton, signUpButtonConstraint);
+
+        //once the login button is pressed its gonna check the username and password entered against the db
         loginButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent event) {
@@ -69,6 +85,25 @@ public class GUI {
                     frame.dispose();
                     openProfile(username, password);
                 } else {
+                    frame.remove(signupButton);
+                    frame.remove(signUpLabel);
+
+                    GridBagConstraints signUpLabelConstraint = new GridBagConstraints();
+                    signUpLabelConstraint.gridx = -1;
+                    signUpLabelConstraint.gridy = 3;
+                    signUpLabelConstraint.gridwidth = 3;
+                    signUpLabelConstraint.anchor = GridBagConstraints.WEST;
+                    JLabel signUpLabel = new JLabel("Sign up here: ");
+                    frame.add(signUpLabel, signUpLabelConstraint);
+
+                    GridBagConstraints signUpButtonConstraint = new GridBagConstraints();
+                    signUpButtonConstraint.gridx = -1;
+                    signUpButtonConstraint.gridy = 4;
+                    signUpButtonConstraint.gridwidth = 3;
+                    signUpButtonConstraint.anchor = GridBagConstraints.WEST;
+                    JButton signupButton = new JButton("Sign up");
+                    frame.add(signupButton, signUpButtonConstraint);
+
                     tryAgainLabel = new JLabel("Try again");
                     GridBagConstraints constraint = new GridBagConstraints();
                     constraint.gridx = 1;
@@ -82,6 +117,124 @@ public class GUI {
 
                 }
 
+
+            }
+        });
+
+        //go to the sign-up window
+        signupButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                frame.dispose();
+                signupInferface();
+            }
+        });
+
+        frame.setVisible(true);
+    }
+
+//---------------------------------------------------------------------------------------------------------------------------------------------
+
+    /**
+     * The signup window.
+     *
+     * @author max
+     */
+    private void signupInferface() {
+        frame = new JFrame("Sign up");
+        frame.setSize(400, 300);
+        frame.setLayout(new GridBagLayout());
+
+//        JPasswordField pass = new JPasswordField(10);
+//        pass.setBackground(Color.RED);
+//        frame.add(pass);
+
+        GridBagConstraints enternameLabelConstraint = new GridBagConstraints();
+        enternameLabelConstraint.gridx = 0;
+        enternameLabelConstraint.gridy = 0;
+        JLabel enterNameLabel = new JLabel("Enter your name: ");
+        frame.add(enterNameLabel, enternameLabelConstraint);
+
+        GridBagConstraints enterNameTextFieldConstraint = new GridBagConstraints();
+        enterNameTextFieldConstraint.gridx = 1;
+        enterNameTextFieldConstraint.gridy = 0;
+        JTextField nameTextField = new JTextField(10);
+        frame.add(nameTextField, enterNameTextFieldConstraint);
+
+        GridBagConstraints enterAddressLabelConstraint = new GridBagConstraints();
+        enterAddressLabelConstraint.gridx = 0;
+        enterAddressLabelConstraint.gridy = 1;
+        JLabel enterAddressLabel = new JLabel("Enter your address: ");
+        frame.add(enterAddressLabel, enterAddressLabelConstraint);
+
+        GridBagConstraints enterAddressTextFieldConstraint = new GridBagConstraints();
+        enterAddressTextFieldConstraint.gridx = 1;
+        enterAddressTextFieldConstraint.gridy = 1;
+        JTextField addressTextField = new JTextField(10);
+        frame.add(addressTextField, enterAddressTextFieldConstraint);
+
+        GridBagConstraints enterUsernameLabelConstraint = new GridBagConstraints();
+        enterUsernameLabelConstraint.gridx = 0;
+        enterUsernameLabelConstraint.gridy = 3;
+        JLabel enterUsernameLabel = new JLabel("Enter a username: ");
+        frame.add(enterUsernameLabel, enterUsernameLabelConstraint);
+
+        GridBagConstraints enterUsernameTextFieldConstraint = new GridBagConstraints();
+        enterUsernameTextFieldConstraint.gridx = 1;
+        enterUsernameTextFieldConstraint.gridy = 3;
+        usernameTextField = new JTextField(10);
+        frame.add(usernameTextField, enterUsernameTextFieldConstraint);
+
+        GridBagConstraints enterPasswordLabelConstraint = new GridBagConstraints();
+        enterPasswordLabelConstraint.gridx = 0;
+        enterPasswordLabelConstraint.gridy = 4;
+        JLabel enterPasswordLabel = new JLabel("Enter a password: ");
+        frame.add(enterPasswordLabel, enterPasswordLabelConstraint);
+
+        GridBagConstraints enterPasswordTextFieldConstraint = new GridBagConstraints();
+        enterPasswordTextFieldConstraint.gridx = 1;
+        enterPasswordTextFieldConstraint.gridy = 4;
+        passwordTextField = new JTextField(10);
+        frame.add(passwordTextField, enterPasswordTextFieldConstraint);
+
+        GridBagConstraints signUpButtonConstraint = new GridBagConstraints();
+        signUpButtonConstraint.gridx = 0;
+        signUpButtonConstraint.gridy = 7;
+        JButton signupButton = new JButton("Sign up and login");
+        frame.add(signupButton, signUpButtonConstraint);
+
+//        GridBagConstraints signUpButtonConstraint = new GridBagConstraints();
+//        signUpButtonConstraint.gridx = 0;
+//        signUpButtonConstraint.gridy = 4;
+//        JButton signupButton = new JButton("Sign up and login");
+//        frame.add(signupButton, signUpButtonConstraint);
+
+        //TODO: ADD A LIST OF DOCTORS FROM THE DB TO CHOOSE FROM.
+
+        //check for existing user
+        //if not found, add it to db and login.
+        signupButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String username = usernameTextField.getText();
+                String password = passwordTextField.getText();
+                String name = nameTextField.getText();
+                String address = addressTextField.getText();
+                DBManager database = new DBManager();
+
+                //todo: get the doctor id number from the doctor selection
+
+                //if the username doesn't exist, create user
+                if (!database.checkSignUpUsername(username)) {
+                    //create user in the database.
+                    database.addUser(username, password, name, address);
+                    frame.dispose();
+                    openProfile(username, password);
+
+                } else {
+                    //TODO: GIVE A MESSAGE SAYING THE USERNAME ALREADY EXISTS.
+                    //or just be lazy and say "try again" instead
+                }
 
             }
         });
@@ -153,5 +306,5 @@ public class GUI {
         frame.setVisible(true);
     }
 
-    
+
 }
