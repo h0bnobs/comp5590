@@ -350,7 +350,7 @@ public class GUI {
             System.out.println("Selected Doctor: " + selectedDoctor);
 
             // Close the doctor selection window
-            DBManager.getAllDoctors();
+            System.out.print(DBManager.getAllDoctors());
         }
     });
     frame.setVisible(true);
