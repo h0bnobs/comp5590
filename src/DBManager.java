@@ -1,13 +1,16 @@
 package src;
 
 import java.sql.*;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class DBManager {
     //connection to the database
-    private Connection connection;
-    private Statement statement;
-    private ResultSet resultSet;
+    private static Connection connection;
+    private static Statement statement;
+    private static ResultSet resultSet;
 
     /**
      * Checks the login given from the login page against the username and password in the database.
@@ -188,6 +191,60 @@ public class DBManager {
             e.printStackTrace();
         }
         return 0;
+    }
+
+
+
+
+    /**
+     * Returns what the next doctor id should be when making list of doctors.
+     * @author Joshwa
+     * @return An int counter which is the pid that the next user will be.
+     */
+    private int getNextDID() {
+        try {
+            //connect to my local database
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            connection = DriverManager.getConnection("jdbc:mysql://localhost/comp5590?user=1&password=1");
+            statement = connection.createStatement();
+            resultSet = statement.executeQuery("select * from patients");
+            int counter = 0;
+            while (resultSet.next())
+                counter++;
+
+            System.out.println(counter + 1);
+            return counter + 1;
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
+
+    public static List<HashMap<String, Object>> getAllDoctors() {
+        List<HashMap<String, Object>> doctorsList = new ArrayList<>();
+    
+        try (Connection connection = DriverManager.getConnection("jdbc:mysql://localhost/comp5590?user=1&password=1");
+            PreparedStatement preparedStatement = connection.prepareStatement("SELECT * FROM doctors");
+            ResultSet resultSet = preparedStatement.executeQuery()) {
+    
+            while (resultSet.next()) {
+                HashMap<String, Object> doctorInformation = new HashMap<>();
+                doctorInformation.put("did", resultSet.getString("did"));
+                doctorInformation.put("first_name", resultSet.getString("first_name"));
+                doctorInformation.put("last_name", resultSet.getString("last_name"));
+                doctorInformation.put("address", resultSet.getString("address"));
+                doctorInformation.put("start_date", resultSet.getString("start_date"));
+                doctorInformation.put("specialist_area", resultSet.getString("specialist_area"));
+    
+                doctorsList.add(doctorInformation);
+            }
+    
+        } catch (SQLException e) {
+            e.printStackTrace(); // Handle the exception appropriately, log or rethrow
+        }
+    
+        return doctorsList;
     }
 
 }

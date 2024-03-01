@@ -1,13 +1,12 @@
 package src;
 
 import java.awt.*;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.HashMap;
 
 import javax.swing.*;
+
 
 public class GUI {
     private JFrame frame;
@@ -229,7 +228,7 @@ public class GUI {
                     //create user in the database.
                     database.addUser(username, password, name, address);
                     frame.dispose();
-                    openProfile(username, password);
+                    doctorSelection(username, password);
 
                 } else {
                     //TODO: GIVE A MESSAGE SAYING THE USERNAME ALREADY EXISTS.
@@ -305,6 +304,57 @@ public class GUI {
 
         frame.setVisible(true);
     }
+
+//---------------------------------------------------------------------------------------------------------------------------------------------
+
+    private void doctorSelection(String username, String password) {
+    frame = new JFrame("Select Doctor");
+    frame.setSize(400, 300);
+    frame.setLayout(new GridBagLayout());
+
+    GridBagConstraints gbc = new GridBagConstraints();
+
+    // Simulating a list of doctors for demonstration purposes
+    String[] doctors = {};
+
+
+    JList<String> doctorList = new JList<>(doctors);
+    JScrollPane scrollPane = new JScrollPane(doctorList);
+
+    // Set constraints for the list
+    gbc.gridx = 0;
+    gbc.gridy = 0;
+    gbc.gridwidth = 2;
+    gbc.fill = GridBagConstraints.BOTH;
+    gbc.weightx = 1.0;
+    gbc.weighty = 1.0;
+    frame.add(scrollPane, gbc);
+
+    JButton selectButton = new JButton("Submit");
+
+    // Set constraints for the select button
+    gbc.gridy = 1;
+    gbc.gridwidth = 1;
+    gbc.fill = GridBagConstraints.NONE;
+    gbc.weighty = 0.0;
+    frame.add(selectButton, gbc);
+
+    // Add action listener for the select button
+    selectButton.addActionListener(new ActionListener() {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            // Retrieve the selected doctor from the list
+            String selectedDoctor = doctorList.getSelectedValue();
+
+            // Perform further actions based on the selected doctor (e.g., store in the database)
+            System.out.println("Selected Doctor: " + selectedDoctor);
+
+            // Close the doctor selection window
+            DBManager.getAllDoctors();
+        }
+    });
+    frame.setVisible(true);
+}
 
 
 }
