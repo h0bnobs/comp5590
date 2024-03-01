@@ -277,4 +277,7 @@ public static List<String> getAllDoctorNames() {
     return doctorNames;
 }
 
+
+// Can do above method in the getAllDoctors method through doing line 261 stuff & 269 stuff within to create the list there.
+
 }
