@@ -71,6 +71,19 @@ public class GUI {
         JButton signupButton = new JButton("Sign up");
         frame.add(signupButton, signUpButtonConstraint);
 
+        tryAgainLabel = new JLabel("Try again");
+        GridBagConstraints tryAgainLabelConstraint = new GridBagConstraints();
+        tryAgainLabelConstraint.gridx = 3;
+        tryAgainLabelConstraint.gridy = 2;
+
+        signupButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                frame.dispose();
+                signupInterface();
+            }
+        });
+
         //once the login button is pressed its gonna check the username and password entered against the db
         loginButton.addActionListener(new ActionListener() {
             @Override
@@ -86,39 +99,13 @@ public class GUI {
                     frame.dispose();
                     openProfile(username, password);
                 } else {
-                    frame.remove(signupButton);
-                    frame.remove(signUpLabel);
-
-                    GridBagConstraints signUpLabelConstraint = new GridBagConstraints();
-                    signUpLabelConstraint.gridx = -1;
-                    signUpLabelConstraint.gridy = 3;
-                    signUpLabelConstraint.gridwidth = 3;
-                    signUpLabelConstraint.anchor = GridBagConstraints.WEST;
-                    JLabel signUpLabel = new JLabel("Sign up here: ");
-                    frame.add(signUpLabel, signUpLabelConstraint);
-
-                    GridBagConstraints signUpButtonConstraint = new GridBagConstraints();
-                    signUpButtonConstraint.gridx = -1;
-                    signUpButtonConstraint.gridy = 4;
-                    signUpButtonConstraint.gridwidth = 3;
-                    signUpButtonConstraint.anchor = GridBagConstraints.WEST;
-                    JButton signupButton = new JButton("Sign up");
-                    frame.add(signupButton, signUpButtonConstraint);
-
-                    tryAgainLabel = new JLabel("Try again");
-                    GridBagConstraints constraint = new GridBagConstraints();
-                    constraint.gridx = 1;
-                    constraint.gridy = 2;
-                    frame.add(tryAgainLabel, constraint);
+                    frame.add(tryAgainLabel, tryAgainLabelConstraint);
                     frame.revalidate();
                     frame.repaint();
                     System.out.println("try again");
                     usernameTextField.setText("");
                     passwordTextField.setText("");
-
                 }
-
-
             }
         });
 
@@ -127,7 +114,7 @@ public class GUI {
             @Override
             public void actionPerformed(ActionEvent e) {
                 frame.dispose();
-                signupInferface();
+                signupInterface();
             }
         });
 
@@ -141,7 +128,7 @@ public class GUI {
      *
      * @author max
      */
-    private void signupInferface() {
+    private void signupInterface() {
         frame = new JFrame("Sign up");
         frame.setSize(400, 300);
         frame.setLayout(new GridBagLayout());
@@ -199,10 +186,16 @@ public class GUI {
         frame.add(passwordTextField, enterPasswordTextFieldConstraint);
 
         GridBagConstraints signUpButtonConstraint = new GridBagConstraints();
-        signUpButtonConstraint.gridx = 0;
+        signUpButtonConstraint.gridx = 2;
         signUpButtonConstraint.gridy = 7;
-        JButton signupButton = new JButton("Sign up and login");
+        JButton signupButton = new JButton("Next");
         frame.add(signupButton, signUpButtonConstraint);
+
+        GridBagConstraints goBackButtonConstraint = new GridBagConstraints();
+        goBackButtonConstraint.gridx = 0;
+        goBackButtonConstraint.gridy = 7;
+        JButton goBackButton = new JButton("Go back");
+        frame.add(goBackButton, goBackButtonConstraint);
 
 //        GridBagConstraints signUpButtonConstraint = new GridBagConstraints();
 //        signUpButtonConstraint.gridx = 0;
@@ -240,6 +233,15 @@ public class GUI {
             }
         });
 
+        goBackButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                frame.dispose();
+                loginInterface();
+            }
+        });
+
+
         frame.setVisible(true);
     }
 
@@ -270,7 +272,8 @@ public class GUI {
 
         // messagelist
         // TODO: I guess the messages are gonna be stored on the db so we need them from the db
-        String[] messages = {"Message 1", "Message 2", "Message 3"};
+        String[] messages = new String[5];
+        messages[0] = database.generateSignupMessage(userInformation);
         JList<String> messageList = new JList<>(messages);
         JScrollPane scrollPane = new JScrollPane(messageList);
         scrollPane.setPreferredSize(new Dimension(580, 200));
@@ -309,55 +312,57 @@ public class GUI {
 
 //---------------------------------------------------------------------------------------------------------------------------------------------
 
-private void doctorSelection(String username, String password) {
-    frame = new JFrame("Select Doctor");
-    frame.setSize(400, 300);
-    frame.setLayout(new GridBagLayout());
+    private void doctorSelection(String username, String password) {
+        frame = new JFrame("Select Doctor");
+        frame.setSize(400, 300);
+        frame.setLayout(new GridBagLayout());
 
-    GridBagConstraints gbc = new GridBagConstraints();
+        GridBagConstraints gbc = new GridBagConstraints();
 
-    // Add doctors from the database to the list
-    List<String> doctorNames = DBManager.getAllDoctorNames();
-    String[] doctors = doctorNames.toArray(new String[0]);
+        // Add doctors from the database to the list
+        List<String> doctorNames = DBManager.getAllDoctorNames();
+        String[] doctors = doctorNames.toArray(new String[0]);
+        JList<String> doctorList = new JList<>(doctors);
+        JScrollPane scrollPane = new JScrollPane(doctorList);
 
-    JList<String> doctorList = new JList<>(doctors);
-    JScrollPane scrollPane = new JScrollPane(doctorList);
+        // List model
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.gridwidth = 2;
+        gbc.fill = GridBagConstraints.BOTH;
+        gbc.weightx = 1.0;
+        gbc.weighty = 1.0;
+        frame.add(scrollPane, gbc);
 
-    // List model
-    gbc.gridx = 0;
-    gbc.gridy = 0;
-    gbc.gridwidth = 2;
-    gbc.fill = GridBagConstraints.BOTH;
-    gbc.weightx = 1.0;
-    gbc.weighty = 1.0;
-    frame.add(scrollPane, gbc);
+        JButton selectButton = new JButton("Choose doctor and login");
 
-    JButton selectButton = new JButton("Submit");
+        // Select button model
+        gbc.gridy = 1;
+        gbc.gridwidth = 1;
+        gbc.fill = GridBagConstraints.NONE;
+        gbc.weighty = 0.0;
+        frame.add(selectButton, gbc);
 
-    // Select button model
-    gbc.gridy = 1;
-    gbc.gridwidth = 1;
-    gbc.fill = GridBagConstraints.NONE;
-    gbc.weighty = 0.0;
-    frame.add(selectButton, gbc);
+        // Select button Action
+        selectButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String selectedDoctor = doctorList.getSelectedValue();
 
-    // Select button Action
-    selectButton.addActionListener(new ActionListener() {
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            // Choosen Doctor
-            String selectedDoctor = doctorList.getSelectedValue();
+                //update patient's assigned doctor id in the db.
+                DBManager db = new DBManager();
+                HashMap<String, Object> user = db.getUserInfo(username, password);
+                String pid = (String) user.get("pid");
 
-            // Shows which doctor was selected for debug purposes
-            System.out.println("Selected Doctor: " + selectedDoctor);
+                db.updateAssignedDoctorId(pid, selectedDoctor);
+                frame.dispose();
+                openProfile(username, password);
 
-            // Closes frame
-            frame.dispose();
-        }
-    });
+            }
+        });
 
-    frame.setVisible(true);
-}
+        frame.setVisible(true);
+    }
 
 
 }

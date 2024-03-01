@@ -80,6 +80,7 @@ public class DBManager {
                 userInformation.put("address", resultSet.getString("address"));
                 userInformation.put("username", resultSet.getString("username"));
                 userInformation.put("password", resultSet.getString("password"));
+                userInformation.put("assigned_doctor_id", resultSet.getString("assigned_doctor_id"));
             }
 
         } catch (Exception e) {
@@ -92,8 +93,8 @@ public class DBManager {
      * Checks that a user isn't trying to sign up using a duplicate username
      *
      * @param username The username from the sign-up window.
-     * @author max
      * @return true if a matching username already exists.
+     * @author max
      */
     public boolean checkSignUpUsername(String username) {
         try {
@@ -129,8 +130,8 @@ public class DBManager {
      *
      * @param username The username from the sign-up window.
      * @param password The password from the sign-up window.
-     * @param name The name from the sign-up window.
-     * @param address The address from the sign-up window.
+     * @param name     The name from the sign-up window.
+     * @param address  The address from the sign-up window.
      * @author max
      */
     public void addUser(String username, String password, String name, String address) {
@@ -138,15 +139,6 @@ public class DBManager {
             //connect to my local database
             Class.forName("com.mysql.cj.jdbc.Driver");
             connection = DriverManager.getConnection("jdbc:mysql://localhost/comp5590?user=1&password=1");
-
-            //pid
-            //name
-            //address
-            //username
-            //password
-            //assigned_doctor_id
-
-            //INSERT INTO `comp5590`.`patients` (`pid`, `name`, `address`, `username`, `password`, `assigned_doctor_id`) VALUES ('5', 'testname', 'addy', 'username', 'pass', '1');
 
             //prepare a query on that db
             //String query = "SELECT * FROM patients WHERE username = ? AND password = ?";
@@ -170,8 +162,9 @@ public class DBManager {
 
     /**
      * Returns what the next patient id should be when adding a patient.
-     * @author max
+     *
      * @return An int counter which is the pid that the next user will be.
+     * @author max
      */
     private int getNextPID() {
         try {
@@ -193,13 +186,98 @@ public class DBManager {
         return 0;
     }
 
+    /**
+     * Returns the doctor's full name.
+     *
+     * @param did the doctor's id.
+     * @return their full name, with a space in between first and second.
+     * @author max
+     */
+    public String getDoctorFullName(String did) {
+        String fullName = "";
 
+        try {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            connection = DriverManager.getConnection("jdbc:mysql://localhost/comp5590?user=1&password=1");
+
+            String query = "SELECT CONCAT(first_name, ' ', last_name) AS full_name FROM doctors WHERE did = ?";
+            PreparedStatement preparedStatement = connection.prepareStatement(query);
+            preparedStatement.setString(1, did);
+
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            if (resultSet.next()) {
+                fullName = resultSet.getString("full_name");
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return fullName;
+    }
+
+    /**
+     * generates a sign-up message after user signs up.
+     *
+     * @param userInformation all user information.
+     * @return a simple signup message.
+     * @author max
+     */
+    public String generateSignupMessage(HashMap<String, Object> userInformation) {
+        String did = (String) userInformation.get("assigned_doctor_id");
+        return "Welcome, " + userInformation.get("name") + " you are now signed up with dr. " + getDoctorFullName(did);
+    }
+
+    /**
+     * Updates the patient's assigned doctor ID when using the sign-up window.
+     *
+     * @param patientId          the pid of the new user.
+     * @param selectedDoctorName the FULL name of their newly selected doctor.
+     * @author max
+     */
+    public void updateAssignedDoctorId(String patientId, String selectedDoctorName) {
+        try {
+            //connect to my local database
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            connection = DriverManager.getConnection("jdbc:mysql://localhost/comp5590?user=1&password=1");
+            int pid = Integer.parseInt(patientId);
+
+            //need first name only
+            String firstName = selectedDoctorName.split(" ")[0];
+
+            String getDoctorId = "SELECT did FROM doctors WHERE first_name = ?";
+            PreparedStatement preparedStatementDID = connection.prepareStatement(getDoctorId);
+            preparedStatementDID.setString(1, firstName);
+            ResultSet resultSetDoctorId = preparedStatementDID.executeQuery();
+            int did = 0;
+            if (resultSetDoctorId.next()) {
+                did = resultSetDoctorId.getInt("did");
+            } else {
+                System.out.println("Doctor not found");
+                return;
+            }
+
+            //update the patient record where int pid matches the pid in the table, then set their assigned_doctor_id
+            //to the did of the doctor whose name matches doctorName.
+            String query = "UPDATE patients SET assigned_doctor_id = ? WHERE pid = ?";
+            PreparedStatement preparedStatement = connection.prepareStatement(query);
+            preparedStatement.setInt(1, did);
+            preparedStatement.setInt(2, pid);
+
+            preparedStatement.execute();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
 
     /**
      * Returns what the next doctor id should be when making list of doctors.
+     *
+     * @return An int counter which is the did that the next doctor will be
      * @author Joshwa
-     * @return An int counter which is the did that the next user will be.
      */
     private int getNextDID() {
         try {
@@ -207,7 +285,7 @@ public class DBManager {
             Class.forName("com.mysql.cj.jdbc.Driver");
             connection = DriverManager.getConnection("jdbc:mysql://localhost/comp5590?user=1&password=1");
             statement = connection.createStatement();
-            resultSet = statement.executeQuery("select * from patients");
+            resultSet = statement.executeQuery("select * from doctors");
             int counter = 0;
             while (resultSet.next())
                 counter++;
@@ -222,21 +300,21 @@ public class DBManager {
     }
 
 
-
     /**
-     * Gathers all infomation available about doctors.
-     * @author Joshwa
+     * Gathers all information available about doctors.
+     *
      * @return Data which was gathered in form of List<HashMap>.
+     * @author Joshwa
      */
     public static List<HashMap<String, Object>> getAllDoctors() {
         List<HashMap<String, Object>> doctorsList = new ArrayList<>();
-    
-        try (Connection connection = DriverManager.getConnection("jdbc:mysql://localhost/comp5590?user=1&password=1");
-            PreparedStatement preparedStatement = connection.prepareStatement("SELECT * FROM doctors");
-            ResultSet resultSet = preparedStatement.executeQuery()) {
-    
 
-                // Get infomation row by row.
+        try (Connection connection = DriverManager.getConnection("jdbc:mysql://localhost/comp5590?user=1&password=1");
+             PreparedStatement preparedStatement = connection.prepareStatement("SELECT * FROM doctors");
+             ResultSet resultSet = preparedStatement.executeQuery()) {
+
+
+            // Get infomation row by row.
             while (resultSet.next()) {
                 HashMap<String, Object> doctorInformation = new HashMap<>();
                 doctorInformation.put("did", resultSet.getString("did"));
@@ -245,37 +323,38 @@ public class DBManager {
                 doctorInformation.put("address", resultSet.getString("address"));
                 doctorInformation.put("start_date", resultSet.getString("start_date"));
                 doctorInformation.put("specialist_area", resultSet.getString("specialist_area"));
-    
+
                 doctorsList.add(doctorInformation);
             }
-    
+
         } catch (SQLException e) {
             e.printStackTrace();
         }
-    
+
         return doctorsList;
     }
 
+
     // Possibly temporary but keeping it until I can figure out other solution
-public static List<String> getAllDoctorNames() {
-    List<String> doctorNames = new ArrayList<>();
+    public static List<String> getAllDoctorNames() {
+        List<String> doctorNames = new ArrayList<>();
 
-    try (Connection connection = DriverManager.getConnection("jdbc:mysql://localhost/comp5590?user=1&password=1");
-         PreparedStatement preparedStatement = connection.prepareStatement("SELECT * FROM doctors");
-        ResultSet resultSet = preparedStatement.executeQuery()) {
+        try (Connection connection = DriverManager.getConnection("jdbc:mysql://localhost/comp5590?user=1&password=1");
+             PreparedStatement preparedStatement = connection.prepareStatement("SELECT * FROM doctors");
+             ResultSet resultSet = preparedStatement.executeQuery()) {
 
-        while (resultSet.next()) {
-            // Get doctors first and last names from DB to add to the list
-            String fullName = resultSet.getString("first_name") + " " + resultSet.getString("last_name");
-            doctorNames.add(fullName);
+            while (resultSet.next()) {
+                // Get doctors first and last names from DB to add to the list
+                String fullName = resultSet.getString("first_name") + " " + resultSet.getString("last_name");
+                doctorNames.add(fullName);
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
 
-    } catch (SQLException e) {
-        e.printStackTrace();
+        return doctorNames;
     }
-
-    return doctorNames;
-}
 
 
 // Can do above method in the getAllDoctors method through doing line 261 stuff & 269 stuff within to create the list there.
