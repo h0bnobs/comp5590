@@ -199,7 +199,7 @@ public class DBManager {
     /**
      * Returns what the next doctor id should be when making list of doctors.
      * @author Joshwa
-     * @return An int counter which is the pid that the next user will be.
+     * @return An int counter which is the did that the next user will be.
      */
     private int getNextDID() {
         try {
@@ -221,6 +221,13 @@ public class DBManager {
         return 0;
     }
 
+
+
+    /**
+     * Gathers all infomation available about doctors.
+     * @author Joshwa
+     * @return Data which was gathered in form of List<HashMap>.
+     */
     public static List<HashMap<String, Object>> getAllDoctors() {
         List<HashMap<String, Object>> doctorsList = new ArrayList<>();
     
@@ -228,6 +235,8 @@ public class DBManager {
             PreparedStatement preparedStatement = connection.prepareStatement("SELECT * FROM doctors");
             ResultSet resultSet = preparedStatement.executeQuery()) {
     
+
+                // Get infomation row by row.
             while (resultSet.next()) {
                 HashMap<String, Object> doctorInformation = new HashMap<>();
                 doctorInformation.put("did", resultSet.getString("did"));
