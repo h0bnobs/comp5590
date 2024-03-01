@@ -3,7 +3,9 @@ package src;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import javax.swing.*;
 
@@ -307,21 +309,21 @@ public class GUI {
 
 //---------------------------------------------------------------------------------------------------------------------------------------------
 
-    private void doctorSelection(String username, String password) {
+private void doctorSelection(String username, String password) {
     frame = new JFrame("Select Doctor");
     frame.setSize(400, 300);
     frame.setLayout(new GridBagLayout());
 
     GridBagConstraints gbc = new GridBagConstraints();
 
-    // Simulating a list of doctors for demonstration purposes
-    String[] doctors = {};
-
+    // Add doctors from the database to the list
+    List<String> doctorNames = DBManager.getAllDoctorNames();
+    String[] doctors = doctorNames.toArray(new String[0]);
 
     JList<String> doctorList = new JList<>(doctors);
     JScrollPane scrollPane = new JScrollPane(doctorList);
 
-    // Set constraints for the list
+    // List model
     gbc.gridx = 0;
     gbc.gridy = 0;
     gbc.gridwidth = 2;
@@ -332,27 +334,28 @@ public class GUI {
 
     JButton selectButton = new JButton("Submit");
 
-    // Set constraints for the select button
+    // Select button model
     gbc.gridy = 1;
     gbc.gridwidth = 1;
     gbc.fill = GridBagConstraints.NONE;
     gbc.weighty = 0.0;
     frame.add(selectButton, gbc);
 
-    // Add action listener for the select button
+    // Select button Action
     selectButton.addActionListener(new ActionListener() {
         @Override
         public void actionPerformed(ActionEvent e) {
-            // Retrieve the selected doctor from the list
+            // Choosen Doctor
             String selectedDoctor = doctorList.getSelectedValue();
 
-            // Perform further actions based on the selected doctor (e.g., store in the database)
+            // Shows which doctor was selected for debug purposes
             System.out.println("Selected Doctor: " + selectedDoctor);
 
-            // Close the doctor selection window
-            System.out.print(DBManager.getAllDoctors());
+            // Closes frame
+            frame.dispose();
         }
     });
+
     frame.setVisible(true);
 }
 

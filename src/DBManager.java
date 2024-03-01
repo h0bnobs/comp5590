@@ -250,10 +250,31 @@ public class DBManager {
             }
     
         } catch (SQLException e) {
-            e.printStackTrace(); // Handle the exception appropriately, log or rethrow
+            e.printStackTrace();
         }
     
         return doctorsList;
     }
+
+    // Possibly temporary but keeping it until I can figure out other solution
+public static List<String> getAllDoctorNames() {
+    List<String> doctorNames = new ArrayList<>();
+
+    try (Connection connection = DriverManager.getConnection("jdbc:mysql://localhost/comp5590?user=1&password=1");
+         PreparedStatement preparedStatement = connection.prepareStatement("SELECT * FROM doctors");
+        ResultSet resultSet = preparedStatement.executeQuery()) {
+
+        while (resultSet.next()) {
+            // Get doctors first and last names from DB to add to the list
+            String fullName = resultSet.getString("first_name") + " " + resultSet.getString("last_name");
+            doctorNames.add(fullName);
+        }
+
+    } catch (SQLException e) {
+        e.printStackTrace();
+    }
+
+    return doctorNames;
+}
 
 }
