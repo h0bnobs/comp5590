@@ -49,7 +49,7 @@ public class GUI {
         frame.add(usernameTextField, constraint);
 
         constraint.gridx = 2;
-        passwordTextField = new JTextField(5);
+        passwordTextField = new JPasswordField(5);
         frame.add(passwordTextField, constraint);
 
         constraint.gridx = 3;
@@ -183,7 +183,7 @@ public class GUI {
         GridBagConstraints enterPasswordTextFieldConstraint = new GridBagConstraints();
         enterPasswordTextFieldConstraint.gridx = 1;
         enterPasswordTextFieldConstraint.gridy = 4;
-        passwordTextField = new JTextField(10);
+        passwordTextField = new JPasswordField(10);
         frame.add(passwordTextField, enterPasswordTextFieldConstraint);
 
         GridBagConstraints signUpButtonConstraint = new GridBagConstraints();
