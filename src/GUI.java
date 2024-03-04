@@ -99,16 +99,22 @@ public class GUI {
                 database.addLog((String) u.get("pid"), "Logged in");
 
                 //if the username and password match the login frame is disposed and the profile one is formed.
-                if (database.isUserPresent(username, password)) {
-                    frame.dispose();
-                    openProfile(username, password);
+                if (username.length() <= 0 || password.length() <= 0) {
+                    JOptionPane.showMessageDialog(frame, "Username and/or Password required", "Error", JOptionPane.ERROR_MESSAGE);
+                    return; // Exit the method to prevent further execution
                 } else {
-                    frame.add(tryAgainLabel, tryAgainLabelConstraint);
-                    frame.revalidate();
-                    frame.repaint();
-                    System.out.println("try again");
-                    usernameTextField.setText("");
-                    passwordTextField.setText("");
+                    //if the username and password match the login frame is disposed and the profile one is formed.
+                    if (database.isUserPresent(username, password)) {
+                        frame.dispose();
+                        openProfile(username, password);
+                    } else {
+                        frame.add(tryAgainLabel, tryAgainLabelConstraint);
+                        frame.revalidate();
+                        frame.repaint();
+                        System.out.println("try again");
+                        usernameTextField.setText("");
+                        passwordTextField.setText("");
+                    }
                 }
             }
         });
@@ -311,7 +317,6 @@ public class GUI {
         logoutButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                database.addLog((String) userInformation.get("pid"), "Logged out");
                 frame.dispose();
                 loginInterface();
             }
@@ -371,10 +376,6 @@ public class GUI {
                 HashMap<String, Object> user = db.getUserInfo(username, password);
                 String pid = (String) user.get("pid");
                 db.updateAssignedDoctorId(pid, selectedDoctor);
-
-                //add a log to the log table in the db.
-                db.addLog(pid, "Signed up");
-
                 frame.dispose();
                 openProfile(username, password);
 
