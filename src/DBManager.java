@@ -13,7 +13,8 @@ public class DBManager {
 
     /**
      * Adds a log of what user did what functionality.
-     * @param pid the patient ID of the user.
+     *
+     * @param pid     the patient ID of the user.
      * @param message the main message of the log.
      * @author max
      */
@@ -50,6 +51,59 @@ public class DBManager {
 
         }
     }
+
+    /**
+     * Gets the log message from the first log associated with a user.
+     * @param pid
+     * @return the log message.
+     * @author max
+     */
+    public String getLogMessage(String pid) {
+        try {
+            //connect to my local database
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            connection = DriverManager.getConnection("jdbc:mysql://localhost/comp5590?user=1&password=1");
+
+            //prepare a query on that db
+            String query = "SELECT logs.functionality_accessed FROM logs INNER JOIN patients ON logs.pid = patients.pid WHERE patients.pid = ?";
+            PreparedStatement preparedStatement = connection.prepareStatement(query);
+            preparedStatement.setString(1, pid);
+
+            resultSet = preparedStatement.executeQuery();
+            if (resultSet.next()) {
+                return resultSet.getString("functionality_accessed");
+            } else {
+                return null;
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+
+        }
+        return null;
+    }
+
+    /**
+     * deletes log entries associated with a specific patient ID.
+     *
+     * @param pid The patient ID whose log entries need to be deleted.
+     */
+    public void deleteLog(String pid) {
+        try {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            connection = DriverManager.getConnection("jdbc:mysql://localhost/comp5590?user=1&password=1");
+
+            String query = "DELETE FROM logs WHERE pid = ?";
+            PreparedStatement preparedStatement = connection.prepareStatement(query);
+            preparedStatement.setString(1, pid);
+
+            preparedStatement.executeUpdate();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
 
     /**
      * Checks the login given from the login page against the usernames and passwords in the database.

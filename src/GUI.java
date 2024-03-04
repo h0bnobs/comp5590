@@ -317,6 +317,7 @@ public class GUI {
         logoutButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                database.addLog((String) userInformation.get("pid"), "Logged out");
                 frame.dispose();
                 loginInterface();
             }
@@ -376,6 +377,7 @@ public class GUI {
                 HashMap<String, Object> user = db.getUserInfo(username, password);
                 String pid = (String) user.get("pid");
                 db.updateAssignedDoctorId(pid, selectedDoctor);
+                db.addLog(pid, "Signed up");
                 frame.dispose();
                 openProfile(username, password);
 

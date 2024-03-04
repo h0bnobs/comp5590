@@ -2,56 +2,78 @@ package src.tests;
 
 import static org.junit.Assert.*;
 
+import org.junit.Before;
 import org.junit.Test;
 import src.DBManager;
 
 public class DBManagerTest {
-    DBManager dbManager = new DBManager();
+    private DBManager dbManager;
 
     /**
-     * Tests if a username and password are in the db
-     * Note: THIS WILL FAIL IF THERE IS NOT A USER IN THE DB WITH THE USERNAME "validU" AND THE PASSWORD "validP"
-     * @author max
+     * TODO
+     * getUserInfo(String username, String password)
+     * isUsernameDuplicate(String username)
+     * addPatient(String username, String password, String name, String address)
+     * removePatient(String pid, String username)
+     * getNextPID()
+     * getDoctorFullName(String did)
+     * generateSignupMessage(HashMap<String, Object> userInformation)
+     * updateAssignedDoctorId(String patientId, String selectedDoctorName)
+     * getNextDID()
+     * getAllDoctors()
+     * getAllDoctorNames()
      */
-    @Test
-    public void testUsernameAndPasswordExists() {
-        String someValidUsername = "validU";
-        String someValidPassword = "validP";
-        assertTrue(dbManager.isUserPresent(someValidUsername, someValidPassword));
+
+    @Before
+    public void setUp() {
+        dbManager = new DBManager();
     }
 
     /**
-     * Tests if a username and password are not the db
-     * Note: THIS WILL FAIL IF THERE IS A USER IN THE DB WITH THE USERNAME "notValidU" AND THE PASSWORD "notValidP"
+     * Tests if a user can be added to the db successfully.
      * @author max
      */
     @Test
-    public void  testUserLoginInvalidCredentials() {
-        String notValidU = "notValidU";
-        String notValidP = "notValidP";
-        assertFalse(dbManager.isUserPresent(notValidU, notValidP));
+    public void testAddPatient() {
+        dbManager.addPatient("someUser", "somePass", "Jack Reacher", "Maine");
+        assertTrue(dbManager.isUserPresent("someUser", "somePass"));
+        dbManager.removePatient((String) dbManager.getUserInfo("someUser", "somePass").get("pid"), "someUser");
     }
 
     /**
-     * Tests if a username already exists in the database. Removes the added user after.
+     * Tests if a patient is successfully removed.
      * @author max
      */
     @Test
-    public void testisUsernameDuplicate() {
-        dbManager.addPatient("temp", "temp", "tempName", "tempAddress");
-        String user = "temp";
-        assertTrue(dbManager.isUsernameDuplicate(user));
-        dbManager.removePatient(String.valueOf(dbManager.getNextPID() - 1), user);
+    public void testRemovePatient() {
+        dbManager.addPatient("someUser", "somePass", "Jack Reacher", "Maine");
+        dbManager.removePatient((String) dbManager.getUserInfo("someUser", "somePass").get("pid"), "someUser");
+        assertFalse(dbManager.isUserPresent("someUser", "somePass"));
     }
 
     /**
-     * Tests if a username doesn't exist in the database. Removes the added user after.
+     * Tests that the next patient ID is generated correctly.
      * @author max
-     * NOTE: WILL FAIL IF THERE IS SOMEONE IN THE DATABASE WITH THE USERNAME TEMP.
      */
     @Test
-    public void testIsUsernameNotDuplicate() {
-        String user = "notTemp";
-        assertFalse(dbManager.isUsernameDuplicate(user));
+    public void testGetNextPID() {
+        int currentPID = dbManager.getNextPID();
+        dbManager.addPatient("someUser", "somePass", "Jack Reacher", "Maine");
+        dbManager.addPatient("someUser2", "somePass", "Jack Reacher", "Maine");
+        assertEquals(currentPID + 2, dbManager.getNextPID());
+        dbManager.removePatient((String) dbManager.getUserInfo("someUser", "somePass").get("pid"), "someUser");
+        dbManager.removePatient((String) dbManager.getUserInfo("someUser2", "somePass").get("pid"), "someUser2");
+    }
+
+    @Test
+    public void testAddLog() {
+        String pid = String.valueOf(dbManager.getNextPID());
+        String correctLog = "Signed up";
+        dbManager.addPatient("rand", "somePass", "Jack Reacher", "Maine");
+        dbManager.addLog(pid, "Signed up");
+        assertEquals(correctLog, dbManager.getLogMessage(pid));
+        dbManager.deleteLog((String) dbManager.getUserInfo("rand", "somePass").get("pid"));
+        assertNull(dbManager.getLogMessage(pid));
+        dbManager.removePatient((String) dbManager.getUserInfo("rand", "somePass").get("pid"), "someUser");
     }
 }
