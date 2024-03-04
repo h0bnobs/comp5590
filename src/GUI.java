@@ -95,6 +95,9 @@ public class GUI {
                 System.out.println(username);
                 System.out.println(password);
 
+                HashMap<String, Object> u = database.getUserInfo(username, password);
+                database.addLog((String) u.get("pid"), "Logged in");
+
                 //if the username and password match the login frame is disposed and the profile one is formed.
                 if (database.isUserPresent(username, password)) {
                     frame.dispose();
@@ -308,6 +311,7 @@ public class GUI {
         logoutButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                database.addLog((String) userInformation.get("pid"), "Logged out");
                 frame.dispose();
                 loginInterface();
             }
@@ -367,6 +371,10 @@ public class GUI {
                 HashMap<String, Object> user = db.getUserInfo(username, password);
                 String pid = (String) user.get("pid");
                 db.updateAssignedDoctorId(pid, selectedDoctor);
+
+                //add a log to the log table in the db.
+                db.addLog(pid, "Signed up");
+
                 frame.dispose();
                 openProfile(username, password);
 

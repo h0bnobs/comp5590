@@ -1,16 +1,55 @@
 package src;
 
 import java.sql.*;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
 
 public class DBManager {
     //connection to the database
     private static Connection connection;
     private static Statement statement;
     private static ResultSet resultSet;
+
+    /**
+     * Adds a log of what user did what functionality.
+     * @param pid the patient ID of the user.
+     * @param message the main message of the log.
+     * @author max
+     */
+    public void addLog(String pid, String message) {
+        try {
+            //connect to my local database
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            connection = DriverManager.getConnection("jdbc:mysql://localhost/comp5590?user=1&password=1");
+
+            //INSERT INTO comp5590.logs (functionality_accessed, date_and_time, pid)
+            //String query = "INSERT INTO `comp5590`.`patients` (`pid`, `name`, `address`, `username`, `password`, `assigned_doctor_id`) VALUES (?, ?, ?, ?, ?, ?)";
+            //PreparedStatement preparedStatement = connection.prepareStatement(query);
+            //preparedStatement.setString(1, String.valueOf(pid));
+            //preparedStatement.setString(2, name);
+
+            //prepare a query on that db
+            String query = "INSERT INTO `comp5590`.`logs` (`functionality_accessed`, `date_and_time`, `pid`) VALUE (?, ?, ?)";
+            PreparedStatement preparedStatement = connection.prepareStatement(query);
+            preparedStatement.setString(1, message);
+
+            LocalDateTime now = LocalDateTime.now();
+            //american only which sucks
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+            String formattedDateTime = now.format(formatter);
+
+            preparedStatement.setString(2, formattedDateTime);
+            preparedStatement.setString(3, pid);
+
+            preparedStatement.execute();
+
+
+        } catch (Exception e) {
+            e.printStackTrace();
+
+        }
+    }
 
     /**
      * Checks the login given from the login page against the usernames and passwords in the database.
