@@ -95,8 +95,6 @@ public class GUI {
                 System.out.println(username);
                 System.out.println(password);
 
-                HashMap<String, Object> u = database.getUserInfo(username, password);
-                database.addLog((String) u.get("pid"), "Logged in");
 
                 //if the username and password match the login frame is disposed and the profile one is formed.
                 if (username.length() <= 0 || password.length() <= 0) {
@@ -105,6 +103,8 @@ public class GUI {
                 } else {
                     //if the username and password match the login frame is disposed and the profile one is formed.
                     if (database.isUserPresent(username, password)) {
+                        HashMap<String, Object> u = database.getUserInfo(username, password);
+                        database.addLog((String) u.get("pid"), "Logged in");
                         frame.dispose();
                         openProfile(username, password);
                     } else {
