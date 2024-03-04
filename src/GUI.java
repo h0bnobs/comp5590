@@ -14,6 +14,7 @@ import javax.swing.*;
 public class GUI {
     private JFrame frame;
     private JLabel tryAgainLabel;
+    private JLabel errorMessage;
     private JTextField usernameTextField;
     private JTextField passwordTextField;
 
@@ -47,10 +48,12 @@ public class GUI {
         constraint.gridx = 1;
         usernameTextField = new JTextField(5);
         frame.add(usernameTextField, constraint);
+        usernameTextField.setColumns(8);
 
         constraint.gridx = 2;
         passwordTextField = new JPasswordField(5);
         frame.add(passwordTextField, constraint);
+        passwordTextField.setColumns(8);
 
         constraint.gridx = 3;
         JButton loginButton = new JButton("Login");
@@ -77,6 +80,10 @@ public class GUI {
         tryAgainLabelConstraint.gridx = 3;
         tryAgainLabelConstraint.gridy = 2;
 
+        
+        
+
+
         signupButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -95,18 +102,30 @@ public class GUI {
                 System.out.println(username);
                 System.out.println(password);
 
-                //if the username and password match the login frame is disposed and the profile one is formed.
-                if (database.isUserPresent(username, password)) {
-                    frame.dispose();
-                    openProfile(username, password);
-                } else {
-                    frame.add(tryAgainLabel, tryAgainLabelConstraint);
-                    frame.revalidate();
-                    frame.repaint();
-                    System.out.println("try again");
-                    usernameTextField.setText("");
-                    passwordTextField.setText("");
+                
+
+                if (username.length() <= 0 || password.length() <= 0) {
+                    JOptionPane.showMessageDialog(frame, "Username and/or Password required", "Error", JOptionPane.ERROR_MESSAGE);
+                    return; // Exit the method to prevent further execution
                 }
+                
+
+                else{
+                    //if the username and password match the login frame is disposed and the profile one is formed.
+                    if (database.isUserPresent(username, password)) {
+                        frame.dispose();
+                        openProfile(username, password);
+                    } else {
+                        frame.add(tryAgainLabel, tryAgainLabelConstraint);
+                        frame.revalidate();
+                        frame.repaint();
+                        System.out.println("try again");
+                        usernameTextField.setText("");
+                        passwordTextField.setText("");
+                    }
+                }
+
+                
             }
         });
 
