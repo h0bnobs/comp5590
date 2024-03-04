@@ -182,7 +182,7 @@ public class GUI {
         GridBagConstraints enterPasswordTextFieldConstraint = new GridBagConstraints();
         enterPasswordTextFieldConstraint.gridx = 1;
         enterPasswordTextFieldConstraint.gridy = 4;
-        passwordTextField = new JTextField(10);
+        passwordTextField = new JPasswordField(10);
         frame.add(passwordTextField, enterPasswordTextFieldConstraint);
 
         GridBagConstraints signUpButtonConstraint = new GridBagConstraints();
