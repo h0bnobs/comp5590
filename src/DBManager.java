@@ -13,14 +13,14 @@ public class DBManager {
     private static ResultSet resultSet;
 
     /**
-     * Checks the login given from the login page against the username and password in the database.
+     * Checks the login given from the login page against the usernames and passwords in the database.
      *
      * @param username The username from the login window.
      * @param password The password from the login window.
      * @return true if login credentials are valid
      * @author max
      */
-    public boolean checkUserLogin(String username, String password) {
+    public boolean isUserPresent(String username, String password) {
         try {
             //connect to my local database
             Class.forName("com.mysql.cj.jdbc.Driver");
@@ -50,7 +50,7 @@ public class DBManager {
     }
 
     /**
-     * Checks the login given from the login page against the username and password in the database.
+     * Gets all current user info.
      *
      * @param username The username from the login window.
      * @param password The password from the login window.
@@ -70,7 +70,6 @@ public class DBManager {
             preparedStatement.setString(1, username); // Set username as the first parameter
             preparedStatement.setString(2, password); // Set password as the second parameter
 
-            //execute the query
             resultSet = preparedStatement.executeQuery();
 
             //return true if there is a user found with that username and password, false if not
@@ -96,7 +95,7 @@ public class DBManager {
      * @return true if a matching username already exists.
      * @author max
      */
-    public boolean checkSignUpUsername(String username) {
+    public boolean isUsernameDuplicate(String username) {
         try {
             //connect to my local database
             Class.forName("com.mysql.cj.jdbc.Driver");
@@ -124,9 +123,8 @@ public class DBManager {
         }
     }
 
-
     /**
-     * Adds the new user to the database
+     * Adds the new patient to the database
      *
      * @param username The username from the sign-up window.
      * @param password The password from the sign-up window.
@@ -134,7 +132,7 @@ public class DBManager {
      * @param address  The address from the sign-up window.
      * @author max
      */
-    public void addUser(String username, String password, String name, String address) {
+    public void addPatient(String username, String password, String name, String address) {
         try {
             //connect to my local database
             Class.forName("com.mysql.cj.jdbc.Driver");
@@ -160,13 +158,46 @@ public class DBManager {
         }
     }
 
+    public void removePatient(String pid, String username) {
+        try {
+            //connect to my local database
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            connection = DriverManager.getConnection("jdbc:mysql://localhost/comp5590?user=1&password=1");
+            String query;
+
+            if (pid != null && !pid.isEmpty()) {
+                query = "DELETE FROM patients WHERE pid = ?";
+            } else if (username != null && !username.isEmpty()) {
+                query = "DELETE FROM patients WHERE username = ?";
+            } else {
+                System.out.println("Please provide either pid or username to delete a patient.");
+                return;
+            }
+
+            // Prepare the SQL statement
+            PreparedStatement preparedStatement = connection.prepareStatement(query);
+
+            // Set the parameter based on whether pid or username is provided
+            if (pid != null && !pid.isEmpty()) {
+                preparedStatement.setString(1, pid);
+            } else {
+                preparedStatement.setString(1, username);
+            }
+
+            // Execute the query
+            preparedStatement.executeUpdate();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
     /**
      * Returns what the next patient id should be when adding a patient.
      *
      * @return An int counter which is the pid that the next user will be.
      * @author max
      */
-    private int getNextPID() {
+    public int getNextPID() {
         try {
             //connect to my local database
             Class.forName("com.mysql.cj.jdbc.Driver");
@@ -174,8 +205,7 @@ public class DBManager {
             statement = connection.createStatement();
             resultSet = statement.executeQuery("select * from patients");
             int counter = 0;
-            while (resultSet.next())
-                counter++;
+            while (resultSet.next()) counter++;
 
             System.out.println(counter + 1);
             return counter + 1;
@@ -226,7 +256,7 @@ public class DBManager {
      */
     public String generateSignupMessage(HashMap<String, Object> userInformation) {
         String did = (String) userInformation.get("assigned_doctor_id");
-        return "Welcome, " + userInformation.get("name") + " you are now signed up with dr. " + getDoctorFullName(did);
+        return "Welcome " + userInformation.get("name") + ", you are now signed up with dr. " + getDoctorFullName(did);
     }
 
     /**
@@ -287,8 +317,7 @@ public class DBManager {
             statement = connection.createStatement();
             resultSet = statement.executeQuery("select * from doctors");
             int counter = 0;
-            while (resultSet.next())
-                counter++;
+            while (resultSet.next()) counter++;
 
             System.out.println(counter + 1);
             return counter + 1;
@@ -309,9 +338,7 @@ public class DBManager {
     public static List<HashMap<String, Object>> getAllDoctors() {
         List<HashMap<String, Object>> doctorsList = new ArrayList<>();
 
-        try (Connection connection = DriverManager.getConnection("jdbc:mysql://localhost/comp5590?user=1&password=1");
-             PreparedStatement preparedStatement = connection.prepareStatement("SELECT * FROM doctors");
-             ResultSet resultSet = preparedStatement.executeQuery()) {
+        try (Connection connection = DriverManager.getConnection("jdbc:mysql://localhost/comp5590?user=1&password=1"); PreparedStatement preparedStatement = connection.prepareStatement("SELECT * FROM doctors"); ResultSet resultSet = preparedStatement.executeQuery()) {
 
 
             // Get infomation row by row.
@@ -339,9 +366,7 @@ public class DBManager {
     public static List<String> getAllDoctorNames() {
         List<String> doctorNames = new ArrayList<>();
 
-        try (Connection connection = DriverManager.getConnection("jdbc:mysql://localhost/comp5590?user=1&password=1");
-             PreparedStatement preparedStatement = connection.prepareStatement("SELECT * FROM doctors");
-             ResultSet resultSet = preparedStatement.executeQuery()) {
+        try (Connection connection = DriverManager.getConnection("jdbc:mysql://localhost/comp5590?user=1&password=1"); PreparedStatement preparedStatement = connection.prepareStatement("SELECT * FROM doctors"); ResultSet resultSet = preparedStatement.executeQuery()) {
 
             while (resultSet.next()) {
                 // Get doctors first and last names from DB to add to the list

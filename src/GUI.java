@@ -5,6 +5,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 
 import javax.swing.*;
@@ -95,7 +96,7 @@ public class GUI {
                 System.out.println(password);
 
                 //if the username and password match the login frame is disposed and the profile one is formed.
-                if (database.checkUserLogin(username, password)) {
+                if (database.isUserPresent(username, password)) {
                     frame.dispose();
                     openProfile(username, password);
                 } else {
@@ -214,16 +215,21 @@ public class GUI {
                 String password = passwordTextField.getText();
                 String name = nameTextField.getText();
                 String address = addressTextField.getText();
+                LinkedHashMap<Integer, String> newUser = new LinkedHashMap<>();
+                newUser.put(0, usernameTextField.getText());
+                newUser.put(1, passwordTextField.getText());
+                newUser.put(2, nameTextField.getText());
+                newUser.put(3, addressTextField.getText());
+
                 DBManager database = new DBManager();
 
                 //todo: get the doctor id number from the doctor selection
 
                 //if the username doesn't exist, create user
-                if (!database.checkSignUpUsername(username)) {
+                if (!database.isUsernameDuplicate(username)) {
                     //create user in the database.
-                    database.addUser(username, password, name, address);
                     frame.dispose();
-                    doctorSelection(username, password);
+                    doctorSelection(username, password, newUser);
 
                 } else {
                     //TODO: GIVE A MESSAGE SAYING THE USERNAME ALREADY EXISTS.
@@ -312,7 +318,7 @@ public class GUI {
 
 //---------------------------------------------------------------------------------------------------------------------------------------------
 
-    private void doctorSelection(String username, String password) {
+    private void doctorSelection(String username, String password, LinkedHashMap<Integer, String> newUser) {
         frame = new JFrame("Select Doctor");
         frame.setSize(400, 300);
         frame.setLayout(new GridBagLayout());
@@ -349,11 +355,17 @@ public class GUI {
             public void actionPerformed(ActionEvent e) {
                 String selectedDoctor = doctorList.getSelectedValue();
 
-                //update patient's assigned doctor id in the db.
+                //add user to the db using the things they inputted in the signup window
                 DBManager db = new DBManager();
+                String u = newUser.get(0);
+                String p = newUser.get(1);
+                String name = newUser.get(2);
+                String address = newUser.get(3);
+                db.addPatient(u, p, name, address);
+
+                //update patient's assigned doctor id in the db.
                 HashMap<String, Object> user = db.getUserInfo(username, password);
                 String pid = (String) user.get("pid");
-
                 db.updateAssignedDoctorId(pid, selectedDoctor);
                 frame.dispose();
                 openProfile(username, password);
