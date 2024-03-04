@@ -48,7 +48,7 @@ public class GUI {
         frame.add(usernameTextField, constraint);
 
         constraint.gridx = 2;
-        passwordTextField = new JTextField(5);
+        passwordTextField = new JPasswordField(5);
         frame.add(passwordTextField, constraint);
 
         constraint.gridx = 3;
