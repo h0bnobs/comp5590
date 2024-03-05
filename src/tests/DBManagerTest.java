@@ -76,4 +76,17 @@ public class DBManagerTest {
         assertNull(dbManager.getLogMessage(pid));
         dbManager.removePatient((String) dbManager.getUserInfo("rand", "somePass").get("pid"), "someUser");
     }
+
+    @Test
+    public void testGetDoctorFullName() {
+        String doctorId = "1";  // Assuming first doctor is the testing
+        String expectedFullName = "DOC TOR";  // Full name of testing doctor
+
+        String actualFullName = dbManager.getDoctorFullName(doctorId);
+
+        assertEquals(expectedFullName, actualFullName);
+    }
+
+
+    
 }
