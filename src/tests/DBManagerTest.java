@@ -77,6 +77,10 @@ public class DBManagerTest {
         dbManager.removePatient((String) dbManager.getUserInfo("rand", "somePass").get("pid"), "someUser");
     }
 
+    /**
+     * Tests uhhhmmmm errrrrr uhhhhh ummmmmm
+     * @author josh
+     */
     @Test
     public void testGetDoctorFullName() {
         String doctorId = "1";  // Assuming first doctor is the testing
@@ -86,7 +90,4 @@ public class DBManagerTest {
 
         assertEquals(expectedFullName, actualFullName);
     }
-
-
-    
 }

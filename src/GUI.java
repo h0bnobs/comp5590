@@ -225,40 +225,14 @@ public class GUI {
                 String name = nameTextField.getText();
                 String address = addressTextField.getText();
 
-                //Checks to make sure given name is valid
-
-
-                if(name.matches(".*\\d.*")){
+                //Checks to make sure given name doesn't contain digits.
+                if (!validateName(name)) {
                     JOptionPane.showMessageDialog(frame, "Your name cannot contain anything of numerical value", "Error", JOptionPane.ERROR_MESSAGE);
                     return;
                 }
 
-                //Checks to make sure chosen password is valid
-                int upperCaseChars = 0;
-                int lowerCaseChars = 0;
-                int numberChars = 0;
-                int specialChars = 0;
-
-                if(password.length() > 8 && password.length() < 45){
-                    for(int i = 0; i<password.length(); i++){
-                        char passwordChar = password.charAt(i);
-                        if(Character.isUpperCase(passwordChar)){
-                            upperCaseChars++;
-                        }
-                        if(Character.isLowerCase(passwordChar)){
-                            lowerCaseChars++;
-                        }
-                        if(Character.isDigit(passwordChar)){
-                            numberChars++;
-                        }
-                        if(passwordChar>=33&&passwordChar<=46||passwordChar==64){
-                            specialChars++;
-                        }
-                    }
-                    
-                }
-
-                if(upperCaseChars<1&&lowerCaseChars<1&&numberChars<1&&specialChars<1){
+                //Checks to make sure the given password is valid.
+                if (!validatePassword(password)) {
                     JOptionPane.showMessageDialog(frame, "Password Must Contain: \n• Eight or more Characters long \n• One or more Uppercase characters \n• One or more Lowercase characters \n• One or more numerical characters \n• One or more special Character e.g @, ! or $", "Error", JOptionPane.ERROR_MESSAGE);
                     return;
                 }
@@ -426,5 +400,52 @@ public class GUI {
         frame.setVisible(true);
     }
 
+    /**
+     * Makes sure that the name inputted by the user in the signup window doesn't contain digits
+     *
+     * @param name
+     * @return false if the name contains things it isn't meant to.
+     * @author josh
+     */
+    public boolean validateName(String name) {
+        return !name.matches(".*\\d.*");
+    }
+
+    /**
+     * Makes sure that the password inputted by the user in the signup window meets certain requirements.
+     *
+     * @param password
+     * @return True if the password meets all requirements.
+     * @author josh
+     */
+    public boolean validatePassword(String password) {
+        int upperCaseChars = 0;
+        int lowerCaseChars = 0;
+        int numberChars = 0;
+        int specialChars = 0;
+
+        if (password.length() > 8 && password.length() < 45) {
+            for (int i = 0; i < password.length(); i++) {
+                char passwordChar = password.charAt(i);
+                if (Character.isUpperCase(passwordChar)) {
+                    upperCaseChars++;
+                }
+                if (Character.isLowerCase(passwordChar)) {
+                    lowerCaseChars++;
+                }
+                if (Character.isDigit(passwordChar)) {
+                    numberChars++;
+                }
+                if (passwordChar >= 33 && passwordChar <= 46 || passwordChar == 64) {
+                    specialChars++;
+                }
+            }
+        }
+        if (upperCaseChars < 1 || lowerCaseChars < 1 || numberChars < 1 || specialChars < 1) {
+            return false;
+        } else {
+            return true;
+        }
+    }
 
 }

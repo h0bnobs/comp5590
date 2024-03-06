@@ -54,6 +54,7 @@ public class DBManager {
 
     /**
      * Gets the log message from the first log associated with a user.
+     *
      * @param pid
      * @return the log message.
      * @author max
@@ -251,6 +252,13 @@ public class DBManager {
         }
     }
 
+    /**
+     * removes a patient from the database, using their pid or username
+     *
+     * @param pid      patient's pid
+     * @param username patient's username
+     * @author max
+     */
     public void removePatient(String pid, String username) {
         try {
             //connect to my local database
@@ -263,22 +271,40 @@ public class DBManager {
             } else if (username != null && !username.isEmpty()) {
                 query = "DELETE FROM patients WHERE username = ?";
             } else {
-                System.out.println("Please provide either pid or username to delete a patient.");
+                System.out.println("Please provide pid or username to delete a patient.");
                 return;
             }
 
-            // Prepare the SQL statement
             PreparedStatement preparedStatement = connection.prepareStatement(query);
-
-            // Set the parameter based on whether pid or username is provided
             if (pid != null && !pid.isEmpty()) {
                 preparedStatement.setString(1, pid);
             } else {
                 preparedStatement.setString(1, username);
             }
-
-            // Execute the query
             preparedStatement.executeUpdate();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * removes a doctor from the database, using their did.
+     *
+     * @param did doctors' did
+     * @author max
+     */
+    public void removeDoctor(String did) {
+        try {
+            //connect to my local database
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            connection = DriverManager.getConnection("jdbc:mysql://localhost/comp5590?user=1&password=1");
+            String query = "DELETE FROM doctors WHERE did = ?";
+
+            PreparedStatement preparedStatement = connection.prepareStatement(query);
+            preparedStatement.setString(1, did);
+            preparedStatement.executeUpdate();
+
         } catch (Exception e) {
             e.printStackTrace();
         }
