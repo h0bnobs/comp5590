@@ -222,27 +222,8 @@ public class DBManager {
      *
      * @author max
      */
-    public void addDoctor(String firstName, String secondName, String address, String startDate) {
-        try {
-            //connect to my local database
-            Class.forName("com.mysql.cj.jdbc.Driver");
-            connection = DriverManager.getConnection("jdbc:mysql://localhost/comp5590?user=1&password=1");
+    public void addDoctor() {
 
-            //prepare a query on that db
-            //String query = "SELECT * FROM patients WHERE username = ? AND password = ?";
-            String query = "INSERT INTO `comp5590`.`doctors` (`first_name`, `last_name`, `address`, `start_date`) VALUES (?, ?, ?, ?)";
-            PreparedStatement preparedStatement = connection.prepareStatement(query);
-            preparedStatement.setString(1, firstName);
-            preparedStatement.setString(2, secondName);
-            preparedStatement.setString(3, address);
-            preparedStatement.setString(4, startDate);
-
-            preparedStatement.execute();
-            //execute the query
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
     }
 
     /**
