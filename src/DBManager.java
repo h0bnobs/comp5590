@@ -55,7 +55,7 @@ public class DBManager {
     /**
      * Gets the log message from the first log associated with a user.
      *
-     * @param pid
+     * @param pid the pid associated with the log.
      * @return the log message.
      * @author max
      */
@@ -215,6 +215,15 @@ public class DBManager {
             e.printStackTrace();
             return false;
         }
+    }
+
+    /**
+     * Adds a doctor to the db.
+     *
+     * @author max
+     */
+    public void addDoctor() {
+
     }
 
     /**

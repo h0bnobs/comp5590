@@ -441,11 +441,7 @@ public class GUI {
                 }
             }
         }
-        if (upperCaseChars < 1 || lowerCaseChars < 1 || numberChars < 1 || specialChars < 1) {
-            return false;
-        } else {
-            return true;
-        }
+        return upperCaseChars >= 1 && lowerCaseChars >= 1 && numberChars >= 1 && specialChars >= 1;
     }
 
 }
