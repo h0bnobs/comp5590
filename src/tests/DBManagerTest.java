@@ -34,6 +34,7 @@ public class DBManagerTest {
         dbManager.addPatient("someUser", "somePass", "Jack Reacher", "Maine");
         assertTrue(dbManager.isUsernameDuplicate("someUser"));
         assertFalse(dbManager.isUsernameDuplicate("notSomeUser"));
+        dbManager.removePatient("", "someUser");
     }
 
     /**

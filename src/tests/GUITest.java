@@ -33,6 +33,7 @@ public class GUITest {
 
     /**
      * Tests that a valid name entered passes.
+     *
      * @author max
      */
     @Test
@@ -45,6 +46,7 @@ public class GUITest {
 
     /**
      * Tests that if a name contains digits, it is not valid.
+     *
      * @author max
      */
     @Test
