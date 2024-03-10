@@ -138,7 +138,7 @@ public class GUI {
      *
      * @author max
      */
-    private void signupInterface() {
+    protected void signupInterface() {
         frame = new JFrame("Sign up");
         frame.setSize(400, 300);
         frame.setLayout(new GridBagLayout());
@@ -374,9 +374,10 @@ public class GUI {
 
     /**
      * The interface for the doctor selection process during the signup process.
+     *
      * @param username the patient's username.
      * @param password the patient's password.
-     * @param newUser all data about the patient.
+     * @param newUser  all data about the patient.
      * @author josh, max
      */
     private void doctorSelection(String username, String password, LinkedHashMap<Integer, String> newUser) {
@@ -438,6 +439,14 @@ public class GUI {
         frame.setVisible(true);
     }
 
+//---------------------------------------------------------------------------------------------------------------------------------------------
+
+    /**
+     * Lets the user change their current doctor to a different one.
+     *
+     * @param userInformation the current user.
+     * @author max
+     */
     public void changeDoctorInterface(HashMap<String, Object> userInformation) {
         frame = new JFrame("Change your doctor");
         frame.setSize(400, 300);
@@ -457,28 +466,46 @@ public class GUI {
 
         //list model
         JScrollPane scrollPane = new JScrollPane(doctorList);
+        scrollPane.setPreferredSize(new Dimension(380, 165));
+        scrollPane.setBorder(BorderFactory.createTitledBorder("Select Doctor"));
         GridBagConstraints scrollPaneConstraint = new GridBagConstraints();
-        scrollPaneConstraint.gridx = 0;
-        scrollPaneConstraint.gridy = 0;
+        scrollPaneConstraint.anchor = GridBagConstraints.NORTHWEST;
         scrollPaneConstraint.gridwidth = 2;
-        scrollPaneConstraint.fill = GridBagConstraints.BOTH;
-        scrollPaneConstraint.weightx = 1.0;
-        scrollPaneConstraint.weighty = 1.0;
         frame.add(scrollPane, scrollPaneConstraint);
 
-        GridBagConstraints selectButtonConstraint = new GridBagConstraints();
-        selectButtonConstraint.gridy = 1;
-        selectButtonConstraint.gridwidth = 1;
-        selectButtonConstraint.fill = GridBagConstraints.NONE;
-        selectButtonConstraint.weighty = 0.0;
-        JButton selectButton = new JButton("Change your doctor");
-        frame.add(selectButton, selectButtonConstraint);
+        //change doctor button
+        GridBagConstraints changeDoctorButtonConstraint = new GridBagConstraints();
+        changeDoctorButtonConstraint.gridy = 1;
+        changeDoctorButtonConstraint.gridx = 1;
+        changeDoctorButtonConstraint.gridwidth = 1;
+        changeDoctorButtonConstraint.anchor = GridBagConstraints.CENTER;
+        changeDoctorButtonConstraint.fill = GridBagConstraints.NONE;
+        changeDoctorButtonConstraint.weighty = 0.0;
+        JButton changeDoctorButton = new JButton("Change your doctor");
+        frame.add(changeDoctorButton, changeDoctorButtonConstraint);
 
-        selectButton.addActionListener(new ActionListener() {
+        //go back
+        GridBagConstraints goBackButtonConstraint = new GridBagConstraints();
+        goBackButtonConstraint.gridy = 1;
+        goBackButtonConstraint.gridx = 0;
+        goBackButtonConstraint.gridwidth = 1;
+        goBackButtonConstraint.anchor = GridBagConstraints.CENTER;
+        goBackButtonConstraint.fill = GridBagConstraints.NONE;
+        goBackButtonConstraint.weighty = 0.0;
+        JButton goBackButton = new JButton("Go Back");
+        frame.add(goBackButton, goBackButtonConstraint);
+
+        //TODO add a go back button + log for when they go back.
+
+        changeDoctorButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 String selectedDoctor = doctorList.getSelectedValue();
 
+                if (selectedDoctor == null) {
+                    JOptionPane.showMessageDialog(frame, "Please select a doctor from the list, or go back.", "Error", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
                 //update patient's assigned doctor id in the db.
                 String pid = (String) userInformation.get("pid");
                 dbManager.updateAssignedDoctorId(pid, selectedDoctor);
@@ -487,6 +514,16 @@ public class GUI {
                 openProfile((String) userInformation.get("username"), (String) userInformation.get("password"));
             }
         });
+
+        goBackButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                dbManager.addLog((String) userInformation.get("pid"), "Cancelled doctor change");
+                frame.dispose();
+                openProfile((String) userInformation.get("username"), (String) userInformation.get("password"));
+            }
+        });
+
         frame.setVisible(true);
     }
 

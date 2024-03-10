@@ -222,8 +222,27 @@ public class DBManager {
      *
      * @author max
      */
-    public void addDoctor() {
+    public void addDoctor(String firstName, String lastName, String address, String startDate, String specialistArea) {
+        try {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            connection = DriverManager.getConnection("jdbc:mysql://localhost/comp5590?user=1&password=1");
 
+            String query = "INSERT INTO `comp5590`.`doctors` (`did`, `first_name`, `last_name`, `address`, `start_date`, `specialist_area`) VALUES (?, ?, ?, ?, ?, ?)";
+            PreparedStatement preparedStatement = connection.prepareStatement(query);
+
+            int did = getNextDID();
+
+            preparedStatement.setInt(1, did);
+            preparedStatement.setString(2, firstName);
+            preparedStatement.setString(3, lastName);
+            preparedStatement.setString(4, address);
+            preparedStatement.setString(5, startDate);
+            preparedStatement.setString(6, specialistArea);
+
+            preparedStatement.execute();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -437,7 +456,7 @@ public class DBManager {
      * @return An int counter which is the did that the next doctor will be
      * @author Joshwa
      */
-    private int getNextDID() {
+    public int getNextDID() {
         try {
             //connect to my local database
             Class.forName("com.mysql.cj.jdbc.Driver");
@@ -463,7 +482,7 @@ public class DBManager {
      * @return Data which was gathered in form of List<HashMap>.
      * @author Joshwa
      */
-    public static List<HashMap<String, Object>> getAllDoctors() {
+    public List<HashMap<String, Object>> getAllDoctors() {
         List<HashMap<String, Object>> doctorsList = new ArrayList<>();
 
         try (Connection connection = DriverManager.getConnection("jdbc:mysql://localhost/comp5590?user=1&password=1"); PreparedStatement preparedStatement = connection.prepareStatement("SELECT * FROM doctors"); ResultSet resultSet = preparedStatement.executeQuery()) {
