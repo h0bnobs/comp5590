@@ -31,6 +31,11 @@ public class GUITest {
         gui = new GUI();
     }
 
+    /**
+     * Tests that a valid name entered passes.
+     *
+     * @author max
+     */
     @Test
     public void validateName1() {
         String validName = "max";
@@ -39,6 +44,11 @@ public class GUITest {
         assertTrue(gui.validateName(validName));
     }
 
+    /**
+     * Tests that if a name contains digits, it is not valid.
+     *
+     * @author max
+     */
     @Test
     public void validateName2() {
         String notValid = "123";

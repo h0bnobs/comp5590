@@ -6,18 +6,13 @@ import org.junit.Before;
 import org.junit.Test;
 import src.DBManager;
 
+import java.util.HashMap;
+
 public class DBManagerTest {
     private DBManager dbManager;
 
     /**
      * TODO
-     * getUserInfo(String username, String password)
-     * isUsernameDuplicate(String username)
-     * addPatient(String username, String password, String name, String address)
-     * removePatient(String pid, String username)
-     * getNextPID()
-     * getDoctorFullName(String did)
-     * generateSignupMessage(HashMap<String, Object> userInformation)
      * updateAssignedDoctorId(String patientId, String selectedDoctorName)
      * getNextDID()
      * getAllDoctors()
@@ -30,7 +25,53 @@ public class DBManagerTest {
     }
 
     /**
+     * Tests that isUsernameDuplicate correctly finds a username in the db
+     *
+     * @author max
+     */
+    @Test
+    public void testisUsernameDuplicate() {
+        dbManager.addPatient("someUser", "somePass", "Jack Reacher", "Maine");
+        assertTrue(dbManager.isUsernameDuplicate("someUser"));
+        assertFalse(dbManager.isUsernameDuplicate("notSomeUser"));
+        dbManager.removePatient("", "someUser");
+    }
+
+    /**
+     * Tests that getUserInfo returns correct data.
+     *
+     * @author max
+     */
+    @Test
+    public void testGetUserInfo1() {
+        dbManager.addPatient("someUser", "somePass", "Jack Reacher", "Maine");
+        HashMap<String, Object> user = dbManager.getUserInfo("someUser", "somePass");
+        assertEquals(user.get("username"), "someUser");
+        assertEquals(user.get("password"), "somePass");
+        assertEquals(user.get("name"), "Jack Reacher");
+        assertEquals(user.get("address"), "Maine");
+        dbManager.removePatient((String) user.get("pid"), "someUser");
+    }
+
+    /**
+     * Tests that getUserInfo returns correct data.
+     *
+     * @author max
+     */
+    @Test
+    public void testGetUserInfo2() {
+        dbManager.addPatient("someUser", "somePass", "Jack Reacher", "Maine");
+        HashMap<String, Object> user = dbManager.getUserInfo("someUser", "somePass");
+        assertNotEquals(user.get("username"), "not");
+        assertNotEquals(user.get("password"), "not");
+        assertNotEquals(user.get("name"), "not");
+        assertNotEquals(user.get("address"), "not");
+        dbManager.removePatient((String) user.get("pid"), "someUser");
+    }
+
+    /**
      * Tests if a user can be added to the db successfully.
+     *
      * @author max
      */
     @Test
@@ -42,6 +83,7 @@ public class DBManagerTest {
 
     /**
      * Tests if a patient is successfully removed.
+     *
      * @author max
      */
     @Test
@@ -53,6 +95,7 @@ public class DBManagerTest {
 
     /**
      * Tests that the next patient ID is generated correctly.
+     *
      * @author max
      */
     @Test
@@ -79,10 +122,16 @@ public class DBManagerTest {
 
     /**
      * Tests uhhhmmmm errrrrr uhhhhh ummmmmm
+     *
      * @author josh
      */
     @Test
     public void testGetDoctorFullName() {
+//        dbManager.addDoctor();
+//        String actualFullName = dbManager.getDoctorFullName(doctorId);
+//        assertEquals(expectedFullName, actualFullName);
+//        dbManager.removeDoctor(doctorID);
+
         String doctorId = "1";  // Assuming first doctor is the testing
         String expectedFullName = "DOC TOR";  // Full name of testing doctor
 

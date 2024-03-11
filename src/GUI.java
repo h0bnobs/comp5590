@@ -279,7 +279,7 @@ public class GUI {
      * The profile section of the project.
      *
      * @param username The username of the current user.
-     * @author max
+     * @author max, josh
      */
     private void openProfile(String username, String password) {
         frame = new JFrame("Profile");
@@ -292,39 +292,61 @@ public class GUI {
         JPanel panel = new JPanel();
         panel.setLayout(new BorderLayout());
 
+        //welcome message
         JLabel welcomeMessage = new JLabel("Hello, " + userInformation.get("name"));
-        gbc.gridx = 0;
-        gbc.gridy = 0;
-        gbc.anchor = GridBagConstraints.NORTHWEST;
-        frame.add(welcomeMessage, gbc);
+        welcomeMessage.setFont(welcomeMessage.getFont().deriveFont(20.0f));
+        GridBagConstraints welcomeMessageConstraints = new GridBagConstraints();
+        welcomeMessageConstraints.gridx = 0;
+        welcomeMessageConstraints.gridy = 0;
+        welcomeMessageConstraints.anchor = GridBagConstraints.CENTER;
+        frame.add(welcomeMessage, welcomeMessageConstraints);
 
-        // messagelist
+        //message list
         // TODO: I guess the messages are gonna be stored on the db so we need them from the db
         String[] messages = new String[5];
         messages[0] = database.generateSignupMessage(userInformation);
         JList<String> messageList = new JList<>(messages);
+        messageList.setFixedCellHeight(30);
+        messageList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        DefaultListModel<String> listModel = new DefaultListModel<>();
+        for (String message : messages) {
+            listModel.addElement("• " + message);
+        }
+        messageList.setModel(listModel);
         JScrollPane scrollPane = new JScrollPane(messageList);
-        scrollPane.setPreferredSize(new Dimension(580, 200));
+        scrollPane.setPreferredSize(new Dimension(580, 150));
         scrollPane.setBorder(BorderFactory.createTitledBorder("Messages"));
-        panel.add(scrollPane, BorderLayout.CENTER);
+        GridBagConstraints scrollPaneConstraints = new GridBagConstraints();
+        scrollPaneConstraints.gridx = 0;
+        scrollPaneConstraints.gridy = 1;
+        scrollPaneConstraints.anchor = GridBagConstraints.NORTHWEST;
+        frame.add(scrollPane, scrollPaneConstraints);
 
         //panel
-        gbc.gridx = 0;
-        gbc.gridy = 1;
-        gbc.anchor = GridBagConstraints.NORTHWEST;
-        //gbc.fill = GridBagConstraints.BOTH;
-        gbc.weightx = 1.0;
-        gbc.weighty = 1.0;
-
         panel.setBorder(BorderFactory.createLineBorder(Color.RED));
-        frame.add(panel, gbc);
+        GridBagConstraints panelConstraints = new GridBagConstraints();
+        panelConstraints.gridx = 0;
+        panelConstraints.gridy = 2;
+        panelConstraints.anchor = GridBagConstraints.NORTHWEST;
+        panelConstraints.weightx = 1.0;
+        panelConstraints.weighty = 1.0;
+        frame.add(panel, panelConstraints);
 
         //logout button
-        gbc.gridy++;
-        gbc.anchor = GridBagConstraints.CENTER;
-        gbc.fill = GridBagConstraints.NONE;
+        GridBagConstraints logoutButtonConstraints = new GridBagConstraints();
+        logoutButtonConstraints.gridx = 0;
+        logoutButtonConstraints.gridy = 3;
+        logoutButtonConstraints.anchor = GridBagConstraints.CENTER;
         JButton logoutButton = new JButton("Logout");
-        frame.add(logoutButton, gbc);
+        frame.add(logoutButton, logoutButtonConstraints);
+
+        //change doctor
+        GridBagConstraints changeDoctorButtonConstraints = new GridBagConstraints();
+        changeDoctorButtonConstraints.gridx = 0;
+        changeDoctorButtonConstraints.gridy = 4;
+        changeDoctorButtonConstraints.anchor = GridBagConstraints.CENTER;
+        JButton changeDoctorButton = new JButton("Change Doctor");
+        frame.add(changeDoctorButton, changeDoctorButtonConstraints);
 
         //logout button
         logoutButton.addActionListener(new ActionListener() {
@@ -336,11 +358,27 @@ public class GUI {
             }
         });
 
+        changeDoctorButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                database.addLog((String) userInformation.get("pid"), "Started to change doctor");
+                frame.dispose();
+                changeDoctorInterface(userInformation);
+            }
+        });
+
         frame.setVisible(true);
     }
 
 //---------------------------------------------------------------------------------------------------------------------------------------------
 
+    /**
+     * The interface for the doctor selection process during the signup process.
+     * @param username the patient's username.
+     * @param password the patient's password.
+     * @param newUser all data about the patient.
+     * @author josh, max
+     */
     private void doctorSelection(String username, String password, LinkedHashMap<Integer, String> newUser) {
         frame = new JFrame("Select Doctor");
         frame.setSize(400, 300);
@@ -400,6 +438,60 @@ public class GUI {
         frame.setVisible(true);
     }
 
+    public void changeDoctorInterface(HashMap<String, Object> userInformation) {
+        frame = new JFrame("Change your doctor");
+        frame.setSize(400, 300);
+        frame.setLayout(new GridBagLayout());
+        DBManager dbManager = new DBManager();
+
+        String currentDoctorName = dbManager.getDoctorFullName((String) userInformation.get("assigned_doctor_id"));
+
+        //add the doctors from the database to the list
+        List<String> doctorNames = DBManager.getAllDoctorNames();
+
+        //remove the patient's current doctor from the list of new doctor's to select
+        doctorNames.removeIf(doctor -> doctor.equals(currentDoctorName));
+
+        String[] doctors = doctorNames.toArray(new String[0]);
+        JList<String> doctorList = new JList<>(doctors);
+
+        //list model
+        JScrollPane scrollPane = new JScrollPane(doctorList);
+        GridBagConstraints scrollPaneConstraint = new GridBagConstraints();
+        scrollPaneConstraint.gridx = 0;
+        scrollPaneConstraint.gridy = 0;
+        scrollPaneConstraint.gridwidth = 2;
+        scrollPaneConstraint.fill = GridBagConstraints.BOTH;
+        scrollPaneConstraint.weightx = 1.0;
+        scrollPaneConstraint.weighty = 1.0;
+        frame.add(scrollPane, scrollPaneConstraint);
+
+        GridBagConstraints selectButtonConstraint = new GridBagConstraints();
+        selectButtonConstraint.gridy = 1;
+        selectButtonConstraint.gridwidth = 1;
+        selectButtonConstraint.fill = GridBagConstraints.NONE;
+        selectButtonConstraint.weighty = 0.0;
+        JButton selectButton = new JButton("Change your doctor");
+        frame.add(selectButton, selectButtonConstraint);
+
+        selectButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String selectedDoctor = doctorList.getSelectedValue();
+
+                //update patient's assigned doctor id in the db.
+                String pid = (String) userInformation.get("pid");
+                dbManager.updateAssignedDoctorId(pid, selectedDoctor);
+                dbManager.addLog(pid, "Changed doctor");
+                frame.dispose();
+                openProfile((String) userInformation.get("username"), (String) userInformation.get("password"));
+            }
+        });
+        frame.setVisible(true);
+    }
+
+//---------------------------------------------------------------------------------------------------------------------------------------------
+
     /**
      * Makes sure that the name inputted by the user in the signup window doesn't contain digits
      *
@@ -410,6 +502,8 @@ public class GUI {
     public boolean validateName(String name) {
         return !name.matches(".*\\d.*");
     }
+
+//---------------------------------------------------------------------------------------------------------------------------------------------
 
     /**
      * Makes sure that the password inputted by the user in the signup window meets certain requirements.
@@ -441,11 +535,7 @@ public class GUI {
                 }
             }
         }
-        if (upperCaseChars < 1 || lowerCaseChars < 1 || numberChars < 1 || specialChars < 1) {
-            return false;
-        } else {
-            return true;
-        }
+        return upperCaseChars >= 1 && lowerCaseChars >= 1 && numberChars >= 1 && specialChars >= 1;
     }
 
 }
