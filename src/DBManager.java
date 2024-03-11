@@ -12,6 +12,79 @@ public class DBManager {
     private static ResultSet resultSet;
 
     /**
+     * Adds a message to the messages table.
+     *
+     * @param userInformation the patient that the new message is for.
+     * @param message         the actual message to be added.
+     * @author max
+     */
+    public void addMessage(HashMap<String, Object> userInformation, String message) {
+        try {
+            //connect to my local database
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            connection = DriverManager.getConnection("jdbc:mysql://localhost/comp5590?user=1&password=1");
+
+            //check if a message already exists in the messages table column 'message_content'
+            String query = "SELECT * FROM messages WHERE pid = ? AND message_content = ?";
+            PreparedStatement preparedStatement = connection.prepareStatement(query);
+            preparedStatement.setString(1, (String) userInformation.get("pid"));
+            preparedStatement.setString(2, message);
+
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            if (!resultSet.next()) {
+                String queryAdd = "INSERT INTO messages (pid, message_content, timestamp) VALUES (?, ?, ?)";
+                PreparedStatement preparedStatementAdd = connection.prepareStatement(queryAdd);
+                preparedStatementAdd.setString(1, (String) userInformation.get("pid"));
+                preparedStatementAdd.setString(2, message);
+
+                LocalDateTime now = LocalDateTime.now();
+                DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+                String dateTime = now.format(format);
+                preparedStatementAdd.setString(3, dateTime);
+
+                preparedStatementAdd.executeUpdate();
+            } else {
+                return;
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+
+        }
+    }
+
+    /**
+     * Gets all messages that a user has in the messages table.
+     * @param pid the patient's pid.
+     * @return a list of the patient's messages.
+     * @author max
+     */
+    public List<String> getUserMessages(String pid) {
+        List<String> userMessages = new ArrayList<>();
+
+        try {
+            //connect to my local database
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            connection = DriverManager.getConnection("jdbc:mysql://localhost/comp5590?user=1&password=1");
+
+            String query = "SELECT message_content FROM messages WHERE pid = ?";
+            PreparedStatement preparedStatement = connection.prepareStatement(query);
+            preparedStatement.setString(1, pid);
+
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            while (resultSet.next()) {
+                String message = resultSet.getString("message_content");
+                userMessages.add(message);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return userMessages;
+    }
+
+    /**
      * Adds a log of what user did what functionality.
      *
      * @param pid     the patient ID of the user.

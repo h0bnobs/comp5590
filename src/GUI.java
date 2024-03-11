@@ -303,16 +303,21 @@ public class GUI {
 
         //message list
         // TODO: I guess the messages are gonna be stored on the db so we need them from the db
-        String[] messages = new String[5];
-        messages[0] = database.generateSignupMessage(userInformation);
-        JList<String> messageList = new JList<>(messages);
+        List<String> userMessages = database.getUserMessages((String) userInformation.get("pid"));
+
+        JList<String> messageList = new JList<>();
         messageList.setFixedCellHeight(30);
         messageList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+
         DefaultListModel<String> listModel = new DefaultListModel<>();
-        for (String message : messages) {
-            listModel.addElement("• " + message);
+        for (String message : userMessages) {
+            if (message != null) {
+                listModel.addElement("• " + message);
+            }
         }
         messageList.setModel(listModel);
+
+
         JScrollPane scrollPane = new JScrollPane(messageList);
         scrollPane.setPreferredSize(new Dimension(580, 150));
         scrollPane.setBorder(BorderFactory.createTitledBorder("Messages"));
@@ -429,7 +434,12 @@ public class GUI {
                 HashMap<String, Object> user = db.getUserInfo(username, password);
                 String pid = (String) user.get("pid");
                 db.updateAssignedDoctorId(pid, selectedDoctor);
+
+                //add a log and the welcome message.
                 db.addLog(pid, "Signed up");
+                //"Welcome " + userInformation.get("name") + ", you are now signed up with dr. " + getDoctorFullName(did);
+                db.addMessage(user, "Welcome " + user.get("name") + ", you are now signed up with dr. " + selectedDoctor);
+
                 frame.dispose();
                 openProfile(username, password);
 
@@ -500,16 +510,25 @@ public class GUI {
         changeDoctorButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                String pass = JOptionPane.showInputDialog(frame, "Please enter your password to verify:");
+
+                if (pass == null || !pass.equals(userInformation.get("password"))) {
+                    JOptionPane.showMessageDialog(frame, "Incorrect password, try again.", "Error", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+
                 String selectedDoctor = doctorList.getSelectedValue();
 
                 if (selectedDoctor == null) {
                     JOptionPane.showMessageDialog(frame, "Please select a doctor from the list, or go back.", "Error", JOptionPane.ERROR_MESSAGE);
                     return;
                 }
+
                 //update patient's assigned doctor id in the db.
                 String pid = (String) userInformation.get("pid");
                 dbManager.updateAssignedDoctorId(pid, selectedDoctor);
                 dbManager.addLog(pid, "Changed doctor");
+                dbManager.addMessage(userInformation, "You changed your doctor to: dr. " + selectedDoctor);
                 frame.dispose();
                 openProfile((String) userInformation.get("username"), (String) userInformation.get("password"));
             }
