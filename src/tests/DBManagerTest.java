@@ -58,8 +58,8 @@ public class DBManagerTest {
     @Test
     public void testGetNextPID() {
         int currentPID = dbManager.getNextPID();
-        dbManager.addPatient("someUser", "somePass", "Jack Reacher", "Maine");
-        dbManager.addPatient("someUser2", "somePass", "Jack Reacher", "Maine");
+        dbManager.addPatient("someUser", "Password@2023", "Jack Reacher", "Maine");
+        dbManager.addPatient("someUser2", "Password@2023", "Jack Reacher", "Maine");
         assertEquals(currentPID + 2, dbManager.getNextPID());
         dbManager.removePatient((String) dbManager.getUserInfo("someUser", "somePass").get("pid"), "someUser");
         dbManager.removePatient((String) dbManager.getUserInfo("someUser2", "somePass").get("pid"), "someUser2");
