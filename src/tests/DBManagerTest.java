@@ -7,16 +7,14 @@ import org.junit.Test;
 import src.DBManager;
 
 import java.util.HashMap;
+import java.util.List;
 
 public class DBManagerTest {
     private DBManager dbManager;
 
     /**
      * TODO
-     * updateAssignedDoctorId(String patientId, String selectedDoctorName)
      * getNextDID()
-     * getAllDoctors()
-     * getAllDoctorNames()
      */
 
     @Before
@@ -108,6 +106,11 @@ public class DBManagerTest {
         dbManager.removePatient((String) dbManager.getUserInfo("someUser2", "somePass").get("pid"), "someUser2");
     }
 
+    /**
+     * Tests that logs are correctly added to the log table.
+     *
+     * @author max
+     */
     @Test
     public void testAddLog() {
         String pid = String.valueOf(dbManager.getNextPID());
@@ -138,5 +141,75 @@ public class DBManagerTest {
         String actualFullName = dbManager.getDoctorFullName(doctorId);
 
         assertEquals(expectedFullName, actualFullName);
+    }
+
+    /**
+     * Tests that doctors are correctly removed from the doctors table.
+     *
+     * @author max
+     */
+    @Test
+    public void restRemoveDoctor() {
+        dbManager.addDoctor("Jack", "Reacher", "USA", "2024-01-01 10:00:00", "dermatology");
+        int numOfDoctors = dbManager.getAllDoctors().size();
+        //System.out.println(dbManager.getAllDoctors().get(dbManager.getNextDID() - 2));
+        assertEquals("Jack Reacher", dbManager.getDoctorFullName(String.valueOf(dbManager.getNextDID() - 1)));
+        dbManager.removeDoctor(String.valueOf(dbManager.getNextDID() - 1));
+        assertEquals(numOfDoctors - 1, dbManager.getAllDoctors().size());
+    }
+
+    /**
+     * Tests that the getAllDoctors method returns all doctors correctly.
+     *
+     * @author max
+     */
+    @Test
+    public void testGetAllDoctors() {
+        dbManager.addDoctor("Jack", "Reacher", "USA", "2024-01-01 10:00:00", "dermatology");
+        dbManager.addDoctor("Oscar", "Mccormack", "KH", "2023-02-02 09:00:00", "OW2");
+        List<HashMap<String, Object>> doctors = dbManager.getAllDoctors();
+        assertFalse(doctors.isEmpty());
+        boolean containsFirst = doctors.stream().anyMatch(doctor -> doctor.get("did").equals(String.valueOf(dbManager.getNextDID() - 2)));
+        boolean containsSecond = doctors.stream().anyMatch(doctor -> doctor.get("did").equals(String.valueOf(dbManager.getNextDID() - 1)));
+        assertTrue(containsFirst);
+        assertTrue(containsSecond);
+        dbManager.removeDoctor(String.valueOf(dbManager.getNextDID() - 2));
+        dbManager.removeDoctor(String.valueOf(dbManager.getNextDID()));
+    }
+
+    /**
+     * Tests that the updateAssignedDoctorID method correctly changes the patient's assigned doctor foreign key correctly.
+     *
+     * @author max
+     */
+    @Test
+    public void testUpdateAssignedDoctorId() {
+        dbManager.addPatient("someUser", "somePass", "Jack Reacher", "Maine");
+        dbManager.addDoctor("Jack", "Reacher", "USA", "2024-01-01 10:00:00", "dermatology");
+        String pid = String.valueOf(dbManager.getNextPID() - 1);
+        String docName = "Jack Reacher";
+        dbManager.updateAssignedDoctorId(pid, docName);
+        HashMap<String, Object> userInfo = dbManager.getUserInfo("someUser", "somePass");
+        assertEquals(String.valueOf(dbManager.getNextDID() - 1), userInfo.get("assigned_doctor_id"));
+        dbManager.removePatient(pid, null);
+        dbManager.removeDoctor(String.valueOf(dbManager.getNextDID() - 1));
+    }
+
+    /**
+     * Tests that the getAllDoctorNames method correctly returns the required doctor's full name.
+     *
+     * @author max
+     */
+    @Test
+    public void testGetAllDoctorNames() {
+        dbManager.addDoctor("Bobby", "Shmurda", "Goudhurst", "2024-03-10 09:00:00", "cardiology");
+        dbManager.addDoctor("Jack", "Reacher", "USA", "2024-01-01 10:00:00", "dermatology");
+
+        List<String> doctorNames = DBManager.getAllDoctorNames();
+        assertTrue(doctorNames.contains("Bobby Shmurda"));
+        assertTrue(doctorNames.contains("Jack Reacher"));
+
+        dbManager.removeDoctor(String.valueOf(dbManager.getNextDID() - 1));
+        dbManager.removeDoctor(String.valueOf(dbManager.getNextDID() - 1));
     }
 }
