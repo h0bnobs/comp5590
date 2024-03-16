@@ -118,4 +118,52 @@ public class GUITest {
         String missingUpper = "sdhkk2983kasdb#";
         assertFalse("Password '" + missingUpper + "' shouldn't include any upper case chars, but something has gone wrong.", gui.validatePassword(missingUpper));
     }
+
+    /**
+     * Tests a valid login using valid username and password
+     * @author Joshwa
+     *
+     */
+    @Test
+    public void testSuccessfulLogin() {
+
+        dbManager.addPatient("GregoryHouse", "HouseMD@Season20", "Gregory House", "CrippleSt");
+        String validUsername = "GregoryHouse";
+        String validPassword = "HouseMD@Season20";
+
+        boolean loginResult = dbManager.isUserPresent(validUsername, validPassword);
+
+        assertTrue("True", loginResult);
+        dbManager.removePatient((String) dbManager.getUserInfo("GregoryHouse", "HouseMD@Season20").get("pid"), "GregoryHouse");
+    }
+
+
+
+    /**
+     * Empty Password Test
+     * @author Joshwa
+     *
+     */
+    @Test
+    public void validatePassword7() {
+        String emptyPass = "";
+        assertFalse("Password '" + emptyPass + "' shouln't be empty, but something has gone wrong.", gui.validatePassword(emptyPass));
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 }
