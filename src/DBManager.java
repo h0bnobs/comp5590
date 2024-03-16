@@ -12,6 +12,74 @@ public class DBManager {
     private static ResultSet resultSet;
 
     /**
+     * Adds a new appointment to the database.
+     *
+     * @param did
+     * @param pid
+     * @param date
+     * @author max
+     */
+    public void addAppointment(String did, String pid, String date) {
+        try {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            connection = DriverManager.getConnection("jdbc:mysql://localhost/comp5590?user=1&password=1");
+
+            String query = "INSERT INTO `comp5590`.`appointments` (`did`, `pid`, `date_and_time`) VALUES (?, ?, ?)";
+            PreparedStatement preparedStatement = connection.prepareStatement(query);
+            preparedStatement.setString(1, did);
+            preparedStatement.setString(2, pid);
+            preparedStatement.setString(3, date);
+
+            preparedStatement.execute();
+
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+    }
+
+    /**
+     * Returns all times during a given date, where a doctor is busy.
+     *
+     * @param
+     * @param
+     * @returns
+     * @author max
+     */
+    public ArrayList<String> doctorsBusyTimes(String did, String date) {
+        ArrayList<String> freeTimes = new ArrayList<>();
+        try {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            connection = DriverManager.getConnection("jdbc:mysql://localhost/comp5590?user=1&password=1");
+
+            String query = "SELECT date_and_time FROM appointments WHERE did = ? AND date(date_and_time) = ?";
+            PreparedStatement statement = connection.prepareStatement(query);
+            statement.setString(1, did);
+            statement.setString(2, date);
+            ResultSet results = statement.executeQuery();
+
+            //list of all appointments
+            ArrayList<String> times = new ArrayList<>();
+            while (results.next()) {
+                String appTime = results.getString("date_and_time");
+                times.add(appTime);
+            }
+
+            //all available times between 9am and 5pm (assuming the surgery is gonna be open these hours only).
+            for (int hour = 9; hour <= 17; hour++) {
+                String time = String.format("%02d", hour) + ":00:00";
+                if (times.contains(date + " " + time)) {
+                    freeTimes.add(time);
+                }
+            }
+
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+        //System.out.println(freeTimes);
+        return freeTimes;
+    }
+
+    /**
      * Adds a message to the messages table.
      *
      * @param userInformation the patient that the new message is for.
@@ -56,6 +124,7 @@ public class DBManager {
 
     /**
      * Gets all messages that a user has in the messages table.
+     *
      * @param pid the patient's pid.
      * @return a list of the patient's messages.
      * @author max
@@ -346,7 +415,6 @@ public class DBManager {
             preparedStatement.setString(6, "1");
 
             preparedStatement.execute();
-            //execute the query
 
         } catch (Exception e) {
             e.printStackTrace();
