@@ -124,23 +124,16 @@ public class DBManagerTest {
     }
 
     /**
-     * Tests uhhhmmmm errrrrr uhhhhh ummmmmm
+     * Tests that the getDoctorFullName method gets the doctor's entire full name
      *
      * @author josh
      */
     @Test
     public void testGetDoctorFullName() {
-//        dbManager.addDoctor();
-//        String actualFullName = dbManager.getDoctorFullName(doctorId);
-//        assertEquals(expectedFullName, actualFullName);
-//        dbManager.removeDoctor(doctorID);
-
-        String doctorId = "1";  // Assuming first doctor is the testing
-        String expectedFullName = "DOC TOR";  // Full name of testing doctor
-
-        String actualFullName = dbManager.getDoctorFullName(doctorId);
-
-        assertEquals(expectedFullName, actualFullName);
+        dbManager.addDoctor("Josh", "ThrowsCsGames", "Nuke", "2024-01-01 00:12:00", "Knife Kills");
+        String actualName = dbManager.getDoctorFullName(String.valueOf(dbManager.getNextDID() - 1));
+        assertEquals("Josh ThrowsCsGames", actualName);
+        dbManager.removeDoctor(String.valueOf(dbManager.getNextDID() - 1));
     }
 
     /**
