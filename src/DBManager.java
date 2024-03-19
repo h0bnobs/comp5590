@@ -37,6 +37,8 @@ public class DBManager {
         }
     }
 
+//---------------------------------------------------------------------------------------------------------------------------------------------
+
     /**
      * Returns all times during a given date, where a doctor is busy.
      *
@@ -78,6 +80,8 @@ public class DBManager {
         //System.out.println(freeTimes);
         return freeTimes;
     }
+
+//---------------------------------------------------------------------------------------------------------------------------------------------
 
     /**
      * Adds a message to the messages table.
@@ -122,6 +126,9 @@ public class DBManager {
         }
     }
 
+
+//---------------------------------------------------------------------------------------------------------------------------------------------
+
     /**
      * Gets all messages that a user has in the messages table.
      *
@@ -152,6 +159,8 @@ public class DBManager {
         }
         return userMessages;
     }
+
+//---------------------------------------------------------------------------------------------------------------------------------------------
 
     /**
      * Adds a log of what user did what functionality.
@@ -194,6 +203,8 @@ public class DBManager {
         }
     }
 
+//---------------------------------------------------------------------------------------------------------------------------------------------
+
     /**
      * Gets the log message from the first log associated with a user.
      *
@@ -226,6 +237,8 @@ public class DBManager {
         return null;
     }
 
+//---------------------------------------------------------------------------------------------------------------------------------------------
+
     /**
      * deletes log entries associated with a specific patient ID.
      *
@@ -247,6 +260,7 @@ public class DBManager {
         }
     }
 
+//---------------------------------------------------------------------------------------------------------------------------------------------
 
     /**
      * Checks the login given from the login page against the usernames and passwords in the database.
@@ -284,6 +298,8 @@ public class DBManager {
             return false;
         }
     }
+
+//---------------------------------------------------------------------------------------------------------------------------------------------
 
     /**
      * Gets all current user info.
@@ -324,6 +340,8 @@ public class DBManager {
         return userInformation;
     }
 
+//---------------------------------------------------------------------------------------------------------------------------------------------
+
     /**
      * Checks that a user isn't trying to sign up using a duplicate username
      *
@@ -359,6 +377,8 @@ public class DBManager {
         }
     }
 
+//---------------------------------------------------------------------------------------------------------------------------------------------
+
     /**
      * Adds a doctor to the db.
      *
@@ -386,6 +406,8 @@ public class DBManager {
             e.printStackTrace();
         }
     }
+
+//---------------------------------------------------------------------------------------------------------------------------------------------
 
     /**
      * Adds the new patient to the database
@@ -420,6 +442,8 @@ public class DBManager {
             e.printStackTrace();
         }
     }
+
+//---------------------------------------------------------------------------------------------------------------------------------------------
 
     /**
      * removes a patient from the database, using their pid or username
@@ -457,6 +481,8 @@ public class DBManager {
         }
     }
 
+//---------------------------------------------------------------------------------------------------------------------------------------------
+
     /**
      * removes a doctor from the database, using their did.
      *
@@ -478,6 +504,8 @@ public class DBManager {
             e.printStackTrace();
         }
     }
+
+//---------------------------------------------------------------------------------------------------------------------------------------------
 
     /**
      * Returns what the next patient id should be when adding a patient.
@@ -503,6 +531,8 @@ public class DBManager {
         }
         return 0;
     }
+
+//---------------------------------------------------------------------------------------------------------------------------------------------
 
     /**
      * Returns the doctor's full name.
@@ -535,6 +565,8 @@ public class DBManager {
         return fullName;
     }
 
+//---------------------------------------------------------------------------------------------------------------------------------------------
+
     /**
      * generates a sign-up message after user signs up.
      *
@@ -546,6 +578,8 @@ public class DBManager {
         String did = (String) userInformation.get("assigned_doctor_id");
         return "Welcome " + userInformation.get("name") + ", you are now signed up with dr. " + getDoctorFullName(did);
     }
+
+//---------------------------------------------------------------------------------------------------------------------------------------------
 
     /**
      * Updates the patient's assigned doctor ID when using the sign-up window.
@@ -590,6 +624,7 @@ public class DBManager {
         }
     }
 
+//---------------------------------------------------------------------------------------------------------------------------------------------
 
     /**
      * Returns what the next doctor id should be when making list of doctors.
@@ -616,6 +651,7 @@ public class DBManager {
         return 0;
     }
 
+//---------------------------------------------------------------------------------------------------------------------------------------------
 
     /**
      * Gathers all information available about doctors.
@@ -649,6 +685,7 @@ public class DBManager {
         return doctorsList;
     }
 
+//---------------------------------------------------------------------------------------------------------------------------------------------
 
     // Possibly temporary but keeping it until I can figure out other solution
     public static List<String> getAllDoctorNames() {
