@@ -1,6 +1,8 @@
 package src;
 
+import javax.print.DocFlavor;
 import java.sql.*;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
@@ -11,12 +13,92 @@ public class DBManager {
     private static Statement statement;
     private static ResultSet resultSet;
 
+
+    /**
+     * Gets all the user's previous appointments that they booked.
+     *
+     * @param pid The current user's information
+     * @return A list of the appointments.
+     */
+    public List<HashMap<String, Object>> getAllPreviousAppointments(String pid) {
+        List<HashMap<String, Object>> appointments = new ArrayList<>();
+        try {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            connection = DriverManager.getConnection("jdbc:mysql://localhost/comp5590?user=1&password=1");
+
+            LocalDateTime now = LocalDateTime.now();
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+            String currentDateTime = now.format(formatter);
+
+            String query = "SELECT * FROM appointments WHERE pid = ? AND date_and_time < ?";
+            PreparedStatement preparedStatement = connection.prepareStatement(query);
+            preparedStatement.setString(1, pid);
+            preparedStatement.setString(2, currentDateTime);
+
+            ResultSet results = preparedStatement.executeQuery();
+            while (results.next()) {
+                HashMap<String, Object> singleAppointment = new HashMap<>();
+                singleAppointment.put("visit_details", results.getString("visit_details"));
+                singleAppointment.put("did", results.getString("did"));
+                singleAppointment.put("pid", results.getString("pid"));
+                singleAppointment.put("prescriptions", results.getString("prescriptions"));
+                singleAppointment.put("date_and_time", results.getString("date_and_time"));
+                appointments.add(singleAppointment);
+            }
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+
+        return appointments;
+    }
+
+    /**
+     * Gets all the user's future appointments that they have booked.
+     *
+     * @param pid          The current user's information.
+     * @param did          The current user's doctor's id.
+     * @param monthAndYear The month and year to be looked up.
+     * @return A list of the appointments.
+     */
+    public List<HashMap<String, Object>> getSpecificFutureAppointments(String pid, String did, String monthAndYear) {
+        List<HashMap<String, Object>> appointments = new ArrayList<>();
+        try {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            connection = DriverManager.getConnection("jdbc:mysql://localhost/comp5590?user=1&password=1");
+
+            LocalDateTime now = LocalDateTime.now();
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+            String currentDateTime = now.format(formatter);
+
+            String query = "SELECT * FROM appointments WHERE pid = ? AND did = ? AND DATE_FORMAT(date_and_time, '%Y-%m') = ? AND date_and_time > ?";
+            PreparedStatement preparedStatement = connection.prepareStatement(query);
+            preparedStatement.setString(1, pid);
+            preparedStatement.setString(2, did);
+            preparedStatement.setString(3, monthAndYear);
+            preparedStatement.setString(4, currentDateTime);
+
+            ResultSet results = preparedStatement.executeQuery();
+            while (results.next()) {
+                HashMap<String, Object> singleAppointment = new HashMap<>();
+                singleAppointment.put("visit_details", results.getString("visit_details"));
+                singleAppointment.put("did", results.getString("did"));
+                singleAppointment.put("pid", results.getString("pid"));
+                singleAppointment.put("prescriptions", results.getString("prescriptions"));
+                singleAppointment.put("date_and_time", results.getString("date_and_time"));
+                appointments.add(singleAppointment);
+            }
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+        return appointments;
+    }
+
     /**
      * Adds a new appointment to the database.
      *
-     * @param did
-     * @param pid
-     * @param date
+     * @param did  The doctor who the appointment was booked with.
+     * @param pid  The patient that booked the appointment.
+     * @param date The date that the appointment will be booked on.
      * @author max
      */
     public void addAppointment(String did, String pid, String date) {
@@ -42,10 +124,9 @@ public class DBManager {
     /**
      * Returns all times during a given date, where a doctor is busy.
      *
-     * @param
-     * @param
-     * @returns
-     * @author max
+     * @param did  The doctor to be looked up.
+     * @param date The date to be looked up.
+     * @return A list of the times a doctor is busy on the given date.
      */
     public ArrayList<String> doctorsBusyTimes(String did, String date) {
         ArrayList<String> freeTimes = new ArrayList<>();
