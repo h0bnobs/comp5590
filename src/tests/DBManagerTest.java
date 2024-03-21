@@ -14,12 +14,126 @@ public class DBManagerTest {
 
     /**
      * TODO
-     * getNextDID()
+     * getAllPreviousAppointments
+     * removeAppointment
      */
 
     @Before
     public void setUp() {
         dbManager = new DBManager();
+    }
+
+    /**
+     * Tests that getSpecificFutureAppointments correctly gets the correct appointments when given month and year.
+     *
+     * @author max
+     */
+    @Test
+    public void testGetSpecificFutureAppointments() {
+        String did = String.valueOf(dbManager.getNextDID());
+        dbManager.addDoctor("first", "last", "address", "2023-01-01 10:00:00", "mental health");
+        String pid = String.valueOf(dbManager.getNextPID());
+        dbManager.addPatient("someUser", "somePass", "Jack Reacher", "Maine");
+        dbManager.addAppointment(did, pid, "2025-03-03 11:00:00");
+        dbManager.addAppointment(did, pid, "2025-03-03 12:00:00");
+        List<HashMap<String, Object>> appointments = dbManager.getSpecificFutureAppointments(pid, did, "2025-03");
+        assertEquals("2025-03-03 11:00:00", appointments.getFirst().get("date_and_time"));
+        assertEquals("2025-03-03 12:00:00", appointments.get(1).get("date_and_time"));
+        dbManager.removeAppointment(did, pid, "2025-03-03 11:00:00");
+        dbManager.removeAppointment(did, pid, "2025-03-03 12:00:00");
+        dbManager.removeDoctor(did);
+        dbManager.removePatient(pid, "someUser");
+    }
+
+    /**
+     * Tests that addAppointment correctly adds appointments to the database.
+     *
+     * @author max
+     */
+    @Test
+    public void testAddAppointment() {
+        String did = String.valueOf(dbManager.getNextDID());
+        dbManager.addDoctor("first", "last", "address", "2023-01-01 10:00:00", "mental health");
+        String pid = String.valueOf(dbManager.getNextPID());
+        dbManager.addPatient("someUser", "somePass", "Jack Reacher", "Maine");
+        dbManager.addAppointment(did, pid, "2025-02-02 11:00:00");
+        assertTrue(dbManager.isAppointmentPresent(did, pid, "2025-02-02 11:00:00"));
+        dbManager.removeAppointment(did, pid, "2025-02-02 11:00:00");
+        dbManager.removePatient(pid, "someUser");
+        dbManager.removeDoctor(did);
+    }
+
+    /**
+     * Tests that doctorsBusyTimes correctly returns the correct times, when a doctor is busy.
+     *
+     * @author max
+     */
+    @Test
+    public void testDoctorsBusyTimes() {
+        String did = String.valueOf(dbManager.getNextDID());
+        dbManager.addDoctor("first", "last", "address", "2023-01-01 10:00:00", "mental health");
+        String pid = String.valueOf(dbManager.getNextPID());
+        dbManager.addPatient("someUser", "somePass", "Jack Reacher", "Maine");
+        dbManager.addAppointment(did, pid, "2025-01-01 11:00:00");
+        assertTrue(dbManager.doctorsBusyTimes(did, "2025-01-01").contains("11:00:00"));
+        assertFalse(dbManager.doctorsBusyTimes(did, "2050-09-23").contains(""));
+        dbManager.removeAppointment(did, pid, "2025-01-01 11:00:00");
+        dbManager.removePatient(pid, "someUser");
+        dbManager.removeDoctor(did);
+    }
+
+    /**
+     * Tests that getUserMessages correctly returns all the user's messages.
+     *
+     * @author max
+     */
+    @Test
+    public void testGetUserMessages() {
+        String pid = String.valueOf(dbManager.getNextPID());
+        dbManager.addPatient("sjkdb", "dsuif", "Jack Reacher", "Maine");
+        HashMap<String, Object> userInfo = new HashMap<>();
+        dbManager.addMessage(userInfo, "message test!", pid);
+        dbManager.addMessage(userInfo, "second message test!", pid);
+        List<String> messages = dbManager.getUserMessages(pid);
+        assertTrue(messages.contains("message test!"));
+        assertTrue(messages.contains("second message test!"));
+        assertFalse(messages.contains("not a message!"));
+        dbManager.removeMessage("second message test!", pid);
+        dbManager.removeMessage("message test!", pid);
+        dbManager.removePatient(pid, "sjkdb");
+    }
+
+    /**
+     * Tests that addMessage correctly adds messages to the database.
+     *
+     * @author max
+     */
+    @Test
+    public void testAddMessage() {
+        String pid = String.valueOf(dbManager.getNextPID());
+        dbManager.addPatient("dsuif", "dsuif", "Jack Reacher", "Maine");
+        HashMap<String, Object> userInfo = new HashMap<>();
+        dbManager.addMessage(userInfo, "message test!", pid);
+        List<String> messages = dbManager.getUserMessages(pid);
+        assertTrue(messages.contains("message test!"));
+        assertFalse(messages.contains("not in messages!"));
+        dbManager.removeMessage("message test!", pid);
+        dbManager.removePatient(pid, "dsuif");
+    }
+
+    /**
+     * Tests that getNextDID correctly returns the next doctor id in the database.
+     *
+     * @author max
+     */
+    @Test
+    public void testGetNextDID() {
+        int currentDID = dbManager.getNextDID();
+        dbManager.addDoctor("first", "last", "address", "2023-01-01 10:00:00", "mental health");
+        dbManager.addDoctor("first", "last", "address123", "2023-01-01 11:00:00", "mental health");
+        assertEquals(currentDID + 2, dbManager.getNextDID());
+        dbManager.removeDoctor(String.valueOf(dbManager.getNextDID() - 2));
+        dbManager.removeDoctor(String.valueOf(dbManager.getNextDID()));
     }
 
     /**

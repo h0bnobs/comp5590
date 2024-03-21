@@ -931,7 +931,7 @@ public class GUI {
                             String dateTime = date + " " + time;
                             dbManager.addAppointment(did, pid, dateTime);
                             dbManager.addLog(pid, "Booked an appointment with their Doctor");
-                            dbManager.addMessage(userInformation, "You have an appointment booked with Dr. " + fullDoctorName + " for: " + dateTime);
+                            dbManager.addMessage(userInformation, "You have an appointment booked with Dr. " + fullDoctorName + " for: " + dateTime, (String) userInformation.get("pid"));
                             frame.dispose();
                             openProfile((String) userInformation.get("username"), (String) userInformation.get("password"));
                         } else {
@@ -1030,7 +1030,7 @@ public class GUI {
                 //add a log and the welcome message.
                 db.addLog(pid, "Signed up");
                 //"Welcome " + userInformation.get("name") + ", you are now signed up with dr. " + getDoctorFullName(did);
-                db.addMessage(user, "Welcome " + user.get("name") + ", you are now signed up with dr. " + selectedDoctor);
+                db.addMessage(user, "Welcome " + user.get("name") + ", you are now signed up with dr. " + selectedDoctor, (String) user.get("pid"));
 
                 frame.dispose();
                 openProfile(username, password);
@@ -1118,7 +1118,7 @@ public class GUI {
                 String pid = (String) userInformation.get("pid");
                 dbManager.updateAssignedDoctorId(pid, selectedDoctor);
                 dbManager.addLog(pid, "Changed doctor");
-                dbManager.addMessage(userInformation, "You changed your doctor to: dr. " + selectedDoctor);
+                dbManager.addMessage(userInformation, "You changed your doctor to: dr. " + selectedDoctor, (String) userInformation.get("pid"));
                 frame.dispose();
                 openProfile((String) userInformation.get("username"), (String) userInformation.get("password"));
             }
