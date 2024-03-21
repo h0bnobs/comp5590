@@ -137,8 +137,6 @@ public class GUITest {
         dbManager.removePatient((String) dbManager.getUserInfo("GregoryHouse", "HouseMD@Season20").get("pid"), "GregoryHouse");
     }
 
-
-
     /**
      * Empty Password Test
      * @author Joshwa
