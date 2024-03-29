@@ -36,7 +36,7 @@ public class DBManagerTest {
         dbManager.addPatient("someUser", "somePass", "Jack Reacher", "Maine");
         dbManager.addAppointment(did, pid, "2025-03-03 11:00:00");
         dbManager.addAppointment(did, pid, "2025-03-03 12:00:00");
-        List<HashMap<String, Object>> appointments = dbManager.getSpecificFutureAppointments(pid, did, "2025-03");
+        List<HashMap<String, Object>> appointments = dbManager.getFutureAppointmentsByMonth(pid, did, "2025-03");
         assertEquals("2025-03-03 11:00:00", appointments.getFirst().get("date_and_time"));
         assertEquals("2025-03-03 12:00:00", appointments.get(1).get("date_and_time"));
         dbManager.removeAppointment(did, pid, "2025-03-03 11:00:00");

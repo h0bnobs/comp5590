@@ -61,7 +61,7 @@ public class DBManager {
      * @param yearAndMonth The month and year to be looked up.
      * @return A list of the appointments.
      */
-    public List<HashMap<String, Object>> getSpecificFutureAppointments(String pid, String did, String yearAndMonth) {
+    public List<HashMap<String, Object>> getFutureAppointmentsByMonth(String pid, String did, String yearAndMonth) {
         List<HashMap<String, Object>> appointments = new ArrayList<>();
         try {
             LocalDateTime now = LocalDateTime.now();
@@ -69,6 +69,44 @@ public class DBManager {
             String currentDateTime = now.format(formatter);
 
             String query = "SELECT * FROM appointments WHERE pid = ? AND did = ? AND DATE_FORMAT(date_and_time, '%Y-%m') = ? AND date_and_time > ?";
+            PreparedStatement preparedStatement = connection.prepareStatement(query);
+            preparedStatement.setString(1, pid);
+            preparedStatement.setString(2, did);
+            preparedStatement.setString(3, yearAndMonth);
+            preparedStatement.setString(4, currentDateTime);
+
+            ResultSet results = preparedStatement.executeQuery();
+            while (results.next()) {
+                HashMap<String, Object> singleAppointment = new HashMap<>();
+                singleAppointment.put("visit_details", results.getString("visit_details"));
+                singleAppointment.put("did", results.getString("did"));
+                singleAppointment.put("pid", results.getString("pid"));
+                singleAppointment.put("prescriptions", results.getString("prescriptions"));
+                singleAppointment.put("date_and_time", results.getString("date_and_time"));
+                appointments.add(singleAppointment);
+            }
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+        return appointments;
+    }
+
+    /**
+     * Gets all the user's future appointments that they have booked.
+     *
+     * @param pid
+     * @param did
+     * @param yearAndMonth
+     * @return
+     */
+    public List<HashMap<String, Object>> getFutureAppointmentsByFullDate(String pid, String did, String yearAndMonth) {
+        List<HashMap<String, Object>> appointments = new ArrayList<>();
+        try {
+            LocalDateTime now = LocalDateTime.now();
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+            String currentDateTime = now.format(formatter);
+
+            String query = "SELECT * FROM appointments WHERE pid = ? AND did = ? AND DATE_FORMAT(date_and_time, '%Y-%m-%d') = ? AND date_and_time > ?";
             PreparedStatement preparedStatement = connection.prepareStatement(query);
             preparedStatement.setString(1, pid);
             preparedStatement.setString(2, did);

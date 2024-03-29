@@ -338,7 +338,7 @@ public class GUI {
         //logout button
         GridBagConstraints logoutButtonConstraints = new GridBagConstraints();
         logoutButtonConstraints.gridx = 0;
-        logoutButtonConstraints.gridy = 6;
+        logoutButtonConstraints.gridy = 7;
         logoutButtonConstraints.anchor = GridBagConstraints.CENTER;
         JButton logoutButton = new JButton("Logout");
         frame.add(logoutButton, logoutButtonConstraints);
@@ -372,8 +372,16 @@ public class GUI {
         viewPreviousAppointmentsConstraints.gridx = 0;
         viewPreviousAppointmentsConstraints.gridy = 5;
         viewPreviousAppointmentsConstraints.anchor = GridBagConstraints.CENTER;
-        JButton viewPreviousAppointments = new JButton("View Previous Bookings");
-        frame.add(viewPreviousAppointments, viewPreviousAppointmentsConstraints);
+        JButton viewPreviousAppointmentsButton = new JButton("View Previous Bookings");
+        frame.add(viewPreviousAppointmentsButton, viewPreviousAppointmentsConstraints);
+
+        //reschedule a booking button
+        GridBagConstraints rescheduleAppointmentConstraints = new GridBagConstraints();
+        rescheduleAppointmentConstraints.gridx = 0;
+        rescheduleAppointmentConstraints.gridy = 6;
+        rescheduleAppointmentConstraints.anchor = GridBagConstraints.CENTER;
+        JButton rescheduleAppointmentButton = new JButton("Reschedule a Booking");
+        frame.add(rescheduleAppointmentButton, rescheduleAppointmentConstraints);
 
         //logout button action
         logoutButton.addActionListener(new ActionListener() {
@@ -412,7 +420,7 @@ public class GUI {
             }
         });
 
-        viewPreviousAppointments.addActionListener(new ActionListener() {
+        viewPreviousAppointmentsButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 frame.dispose();
@@ -420,6 +428,185 @@ public class GUI {
             }
         });
 
+        rescheduleAppointmentButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                frame.dispose();
+                rescheduleAppointmentInterface(userInformation);
+            }
+        });
+
+        frame.setVisible(true);
+    }
+
+//---------------------------------------------------------------------------------------------------------------------------------------------
+
+    /**
+     * The window where the user can reschedule an appointment that they have booked by entering date and time.
+     *
+     * @param userInformation
+     */
+    public void rescheduleAppointmentInterface(HashMap<String, Object> userInformation) {
+        frame = new JFrame("Reschedule an appointment");
+        frame.setSize(400, 300);
+        frame.setLayout(new GridBagLayout());
+        DBManager dbManager = new DBManager();
+
+        //message
+        JLabel message = new JLabel("What date is your appointment?");
+        message.setFont(message.getFont().deriveFont(13.0f));
+        GridBagConstraints welcomeMessageConstraints = new GridBagConstraints();
+        welcomeMessageConstraints.gridx = 0;
+        welcomeMessageConstraints.gridy = 0;
+        welcomeMessageConstraints.anchor = GridBagConstraints.NORTH;
+        frame.add(message, welcomeMessageConstraints);
+
+        //panel
+        GridBagConstraints panelConstraints = new GridBagConstraints();
+        panelConstraints.gridx = 0;
+        panelConstraints.gridy = 2;
+        JPanel panel = new JPanel();
+
+        //date logic
+        LocalDate fullDate = LocalDate.now();
+        LocalDate defaultDay = fullDate.plusDays(1);
+        int currentDay = defaultDay.getDayOfMonth();
+        int currentMonth = fullDate.getMonthValue();
+        int currentYear = fullDate.getYear();
+
+        String[] days = new String[31];
+        for (int i = 1; i <= 31; i++) {
+            days[i - 1] = String.format("%02d", i);
+        }
+
+        String[] months = new String[12];
+        for (int i = 1; i <= 12; i++) {
+            months[i - 1] = String.format("%02d", i);
+        }
+
+        String[] years = new String[3];
+        for (int i = -1; i <= 1; i++) {
+            years[i + 1] = String.valueOf(fullDate.getYear() + i);
+        }
+
+        //add the days and months to the drop-downs.
+        JComboBox<String> dayComboBox = new JComboBox<>(days);
+        dayComboBox.setSelectedIndex(currentDay - 2);
+        JComboBox<String> monthComboBox = new JComboBox<>(months);
+        monthComboBox.setSelectedIndex(currentMonth - 1);
+        JComboBox<String> yearComboBox = new JComboBox<>(years);
+        yearComboBox.setSelectedIndex(1);
+
+        panel.add(dayComboBox);
+        panel.add(monthComboBox);
+        panel.add(yearComboBox);
+
+        //next button
+        GridBagConstraints nextButtonConstraints = new GridBagConstraints();
+        nextButtonConstraints.gridx = 0;
+        nextButtonConstraints.gridy = 4;
+        nextButtonConstraints.anchor = GridBagConstraints.CENTER;
+        JButton nextButton = new JButton("Next");
+        frame.add(nextButton, nextButtonConstraints);
+
+        //go back
+        GridBagConstraints goBackButtonConstraint = new GridBagConstraints();
+        goBackButtonConstraint.gridy = 5;
+        goBackButtonConstraint.gridx = 0;
+        JButton goBackButton = new JButton("Go Back");
+        frame.add(goBackButton, goBackButtonConstraint);
+
+        nextButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                //all necessary information:
+                String day = (String) dayComboBox.getSelectedItem();
+                String year = (String) yearComboBox.getSelectedItem();
+                String month = (String) monthComboBox.getSelectedItem();
+                String dateSelected = year + "-" + month + "-" + day;
+                String pid = (String) userInformation.get("pid");
+                String did = (String) userInformation.get("assigned_doctor_id");
+
+                List<HashMap<String, Object>> appointments = dbManager.getFutureAppointmentsByFullDate(pid, did, dateSelected);
+
+                //if there are no appointments, show an error and return
+                //if not, display the appointments, asking for an appointment that will be changed.
+                if (appointments.isEmpty()) {
+                    int option = JOptionPane.showOptionDialog(null, "You have no booked appointments on this date.", "No Booked Appointments", JOptionPane.DEFAULT_OPTION, JOptionPane.ERROR_MESSAGE, null, new String[]{"OK"}, "OK");
+                    if (option == JOptionPane.OK_OPTION) {
+                        frame.dispose();
+                        rescheduleAppointmentInterface(userInformation);
+                    }
+                } else {
+                    frame.dispose();
+                    frame = new JFrame("Reschedule an appointment");
+                    frame.setSize(400, 450);
+                    frame.setLayout(new GridBagLayout());
+
+                    //panel
+                    GridBagConstraints panelConstraints = new GridBagConstraints();
+                    panelConstraints.gridx = 0;
+                    panelConstraints.gridy = 2;
+                    JPanel panel = new JPanel();
+                    frame.add(panel, panelConstraints);
+
+                    //list of appointments
+                    JList<String> appointmentsList = new JList<>();
+                    appointmentsList.setFixedCellHeight(30);
+                    appointmentsList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+
+                    DefaultListModel<String> listModel = new DefaultListModel<>();
+                    for (HashMap<String, Object> appointment : appointments) {
+                        //String visitDetails = appointment.get("visit_details") != null ? (String) appointment.get("visit_details") : "Doctor left no notes";
+                        //String prescriptions = appointment.get("prescriptions") != null ? (String) appointment.get("prescriptions") : "Nothing was prescribed";
+                        String element = (String) appointment.get("date_and_time");
+                        listModel.addElement(element);
+                    }
+                    appointmentsList.setModel(listModel);
+
+                    //scroll pane
+                    JScrollPane scrollPane = new JScrollPane(appointmentsList);
+                    scrollPane.setPreferredSize(new Dimension(250, 250));
+                    scrollPane.setBorder(BorderFactory.createTitledBorder("Appointments that can be rescheduled:"));
+                    GridBagConstraints scrollPaneConstraints = new GridBagConstraints();
+                    scrollPaneConstraints.gridx = 0;
+                    scrollPaneConstraints.gridy = 2;
+                    scrollPaneConstraints.anchor = GridBagConstraints.NORTH;
+                    scrollPaneConstraints.weighty = 10.0;
+                    frame.add(scrollPane, scrollPaneConstraints);
+
+                    //go back
+                    GridBagConstraints goBackButtonConstraint = new GridBagConstraints();
+                    goBackButtonConstraint.gridy = 5;
+                    goBackButtonConstraint.gridx = 0;
+                    JButton goBackButton = new JButton("Go Back");
+                    frame.add(goBackButton, goBackButtonConstraint);
+
+
+
+                    goBackButton.addActionListener(new ActionListener() {
+                        @Override
+                        public void actionPerformed(ActionEvent e) {
+                            frame.dispose();
+                            rescheduleAppointmentInterface(userInformation);
+                        }
+                    });
+
+                    frame.setVisible(true);
+
+                }
+            }
+        });
+
+        goBackButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                frame.dispose();
+                openProfile((String) userInformation.get("username"), (String) userInformation.get("password"));
+            }
+        });
+
+        frame.add(panel, panelConstraints);
         frame.setVisible(true);
     }
 
@@ -652,7 +839,7 @@ public class GUI {
                     month = "0" + monthComboBox.getSelectedItem();
                 }
                 monthAndYear.append(yearComboBox.getSelectedItem()).append("-").append(month);
-                List<HashMap<String, Object>> appointments = dbManager.getSpecificFutureAppointments((String) userInformation.get("pid"),
+                List<HashMap<String, Object>> appointments = dbManager.getFutureAppointmentsByMonth((String) userInformation.get("pid"),
                         (String) userInformation.get("assigned_doctor_id"), monthAndYear.toString());
 
                 if (appointments.isEmpty()) {
