@@ -217,9 +217,8 @@ public class BookAppointment {
                             dbManager.addLog(pid, "Booked an appointment with their Doctor");
                             dbManager.addMessage(userInformation, "You have an appointment booked with Dr. " + fullDoctorName + " for: " + dateTime, (String) userInformation.get("pid"));
                             frame.dispose();
-                            gui.openProfile((String) userInformation.get("username"), (String) userInformation.get("password"));
-                        } else {
-
+                            Profile pr = new Profile();
+                            pr.openProfile((String) userInformation.get("username"), (String) userInformation.get("password"));
                         }
                     }
                 });
@@ -243,7 +242,8 @@ public class BookAppointment {
             @Override
             public void actionPerformed(ActionEvent e) {
                 frame.dispose();
-                gui.openProfile((String) userInformation.get("username"), (String) userInformation.get("password"));
+                Profile pr = new Profile();
+                pr.openProfile((String) userInformation.get("username"), (String) userInformation.get("password"));
             }
         });
 

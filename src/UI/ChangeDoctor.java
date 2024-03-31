@@ -91,7 +91,8 @@ public class ChangeDoctor {
                 dbManager.addLog(pid, "Changed doctor");
                 dbManager.addMessage(userInformation, "You changed your doctor to: dr. " + selectedDoctor, (String) userInformation.get("pid"));
                 frame.dispose();
-                gui.openProfile((String) userInformation.get("username"), (String) userInformation.get("password"));
+                Profile pr = new Profile();
+                pr.openProfile((String) userInformation.get("username"), (String) userInformation.get("password"));
             }
         });
 
@@ -100,7 +101,8 @@ public class ChangeDoctor {
             public void actionPerformed(ActionEvent e) {
                 dbManager.addLog((String) userInformation.get("pid"), "Cancelled doctor change");
                 frame.dispose();
-                gui.openProfile((String) userInformation.get("username"), (String) userInformation.get("password"));
+                Profile pr = new Profile();
+                pr.openProfile((String) userInformation.get("username"), (String) userInformation.get("password"));
             }
         });
 
