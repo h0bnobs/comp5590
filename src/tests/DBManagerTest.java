@@ -1,26 +1,44 @@
 package src.tests;
 
-import static org.junit.Assert.*;
-
 import org.junit.Before;
 import org.junit.Test;
-import src.DBManager;
+import src.Database.DBManager;
 
 import java.util.HashMap;
 import java.util.List;
 
+import static org.junit.Assert.*;
+
 public class DBManagerTest {
     private DBManager dbManager;
-
-    /**
-     * TODO
-     * getAllPreviousAppointments
-     * removeAppointment
-     */
 
     @Before
     public void setUp() {
         dbManager = new DBManager();
+    }
+
+    /**
+     * Tests that getAllPreviousAppointments correctly returns all previous appointments that the user booked.
+     *
+     * @author max
+     */
+    @Test
+    public void testGetAllPreviousAppointments() {
+        String did = String.valueOf(dbManager.getNextDID());
+        dbManager.addDoctor("first", "last", "address", "2023-01-01 10:00:00", "mental health");
+        String pid = String.valueOf(dbManager.getNextPID());
+        dbManager.addPatient("someUser", "somePass", "Jack Reacher", "Maine");
+        dbManager.addAppointment(did, pid, "2020-01-10 10:00:00");
+        dbManager.addAppointment(did, pid, "1990-07-19 12:00:00");
+        List<HashMap<String, Object>> appointments = dbManager.getAllPreviousAppointments(pid);
+        assertTrue(appointments.stream().anyMatch(appointment -> appointment.get("date_and_time").equals("2020-01-10 10:00:00")));
+        assertTrue(appointments.stream().anyMatch(appointment -> appointment.get("date_and_time").equals("1990-07-19 12:00:00")));
+        assertFalse(appointments.isEmpty());
+        assertFalse(appointments.stream().anyMatch(appointment -> appointment.get("date_and_time").equals("9999-07-19 12:00:00")));
+        dbManager.removeAppointment(did, pid, "2020-01-10 10:00:00");
+        dbManager.removeAppointment(did, pid, "1990-07-19 12:00:00");
+        dbManager.removePatient(pid, "someUser");
+        dbManager.removeDoctor(did);
     }
 
     /**
@@ -36,13 +54,32 @@ public class DBManagerTest {
         dbManager.addPatient("someUser", "somePass", "Jack Reacher", "Maine");
         dbManager.addAppointment(did, pid, "2025-03-03 11:00:00");
         dbManager.addAppointment(did, pid, "2025-03-03 12:00:00");
-        List<HashMap<String, Object>> appointments = dbManager.getSpecificFutureAppointments(pid, did, "2025-03");
+        List<HashMap<String, Object>> appointments = dbManager.getFutureAppointmentsByMonth(pid, did, "2025-03");
         assertEquals("2025-03-03 11:00:00", appointments.getFirst().get("date_and_time"));
         assertEquals("2025-03-03 12:00:00", appointments.get(1).get("date_and_time"));
         dbManager.removeAppointment(did, pid, "2025-03-03 11:00:00");
         dbManager.removeAppointment(did, pid, "2025-03-03 12:00:00");
         dbManager.removeDoctor(did);
         dbManager.removePatient(pid, "someUser");
+    }
+
+    /**
+     * Tests that appointments are correctly removed from the database.
+     *
+     * @author max
+     */
+    @Test
+    public void testRemoveAppointment() {
+        String did = String.valueOf(dbManager.getNextDID());
+        dbManager.addDoctor("first", "last", "address", "2023-01-01 10:00:00", "mental health");
+        String pid = String.valueOf(dbManager.getNextPID());
+        dbManager.addPatient("someUser", "somePass", "Jack Reacher", "Maine");
+        dbManager.addAppointment(did, pid, "2026-02-02 11:00:00");
+        assertTrue(dbManager.isAppointmentPresent(did, pid, "2026-02-02 11:00:00"));
+        dbManager.removeAppointment(did, pid, "2026-02-02 11:00:00");
+        assertFalse(dbManager.isAppointmentPresent(did, pid, "2026-02-02 11:00:00"));
+        dbManager.removePatient(pid, "someUser");
+        dbManager.removeDoctor(did);
     }
 
     /**
