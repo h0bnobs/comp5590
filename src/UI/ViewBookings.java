@@ -134,7 +134,8 @@ public class ViewBookings {
                             @Override
                             public void actionPerformed(ActionEvent e) {
                                 frame.dispose();
-                                gui.openProfile((String) userInformation.get("username"), (String) userInformation.get("password"));
+                                Profile pr = new Profile();
+                                pr.openProfile((String) userInformation.get("username"), (String) userInformation.get("password"));
                             }
                         });
 
@@ -158,7 +159,8 @@ public class ViewBookings {
             @Override
             public void actionPerformed(ActionEvent e) {
                 frame.dispose();
-                gui.openProfile((String) userInformation.get("username"), (String) userInformation.get("password"));
+                Profile pr = new Profile();
+                pr.openProfile((String) userInformation.get("username"), (String) userInformation.get("password"));
             }
         });
 
@@ -300,7 +302,8 @@ public class ViewBookings {
                         @Override
                         public void actionPerformed(ActionEvent e) {
                             frame.dispose();
-                            gui.openProfile((String) userInformation.get("username"), (String) userInformation.get("password"));
+                            Profile pr = new Profile();
+                            pr.openProfile((String) userInformation.get("username"), (String) userInformation.get("password"));
                         }
                     });
 
@@ -313,7 +316,8 @@ public class ViewBookings {
             @Override
             public void actionPerformed(ActionEvent e) {
                 frame.dispose();
-                gui.openProfile((String) userInformation.get("username"), (String) userInformation.get("password"));
+                Profile pr = new Profile();
+                pr.openProfile((String) userInformation.get("username"), (String) userInformation.get("password"));
             }
         });
 

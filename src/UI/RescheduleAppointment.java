@@ -193,8 +193,10 @@ public class RescheduleAppointment {
             @Override
             public void actionPerformed(ActionEvent e) {
                 frame.dispose();
-                gui.openProfile((String) userInformation.get("username"), (String) userInformation.get("password"));
-            }});
+                Profile pr = new Profile();
+                pr.openProfile((String) userInformation.get("username"), (String) userInformation.get("password"));
+            }
+        });
 
         frame.add(panel, panelConstraints);
         frame.setVisible(true);
@@ -205,7 +207,7 @@ public class RescheduleAppointment {
     /**
      * After the user has selected an appointment they want to reschedule they then choose when they want to re-book to. Including date and time.
      *
-     * @param userInformation The current user.
+     * @param userInformation     The current user.
      * @param selectedAppointment The appointment to be rescheduled.
      * @author max
      */
@@ -397,7 +399,8 @@ public class RescheduleAppointment {
                                 date + " " + messageList.getSelectedValue(), pid);
                         frame.dispose();
 
-                        gui.openProfile((String) userInformation.get("username"), (String) userInformation.get("password"));
+                        Profile pr = new Profile();
+                        pr.openProfile((String) userInformation.get("username"), (String) userInformation.get("password"));
                     }
                 });
 

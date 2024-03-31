@@ -240,7 +240,8 @@ public class LoginAndSignup {
                         HashMap<String, Object> u = database.getUserInfo(username, password);
                         database.addLog((String) u.get("pid"), "Logged in");
                         frame.dispose();
-                        gui.openProfile(username, password);
+                        Profile pr = new Profile();
+                        pr.openProfile(username, password);
                     } else {
                         frame.add(tryAgainLabel, tryAgainLabelConstraint);
                         frame.revalidate();
