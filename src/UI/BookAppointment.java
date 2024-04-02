@@ -109,7 +109,7 @@ public class BookAppointment {
 
         //next button action
         nextButton.addActionListener(e -> {
-            String day = (String) dayComboBox.getSelectedItem();
+            String day = "0" + dayComboBox.getSelectedItem();
             String year = (String) yearComboBox.getSelectedItem();
             String month = "";
             if (Objects.equals(monthComboBox.getSelectedItem(), "10") || Objects.equals(monthComboBox.getSelectedItem(), "11")

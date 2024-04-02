@@ -121,6 +121,7 @@ public class LoginAndSignup {
             //if the username doesn't exist, create user
             if (!database.isUsernameDuplicate(username)) {
                 //create user in the database.
+                frame.dispose();
                 doctorSelection(username, password, newUser);
             }
         });

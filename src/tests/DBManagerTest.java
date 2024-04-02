@@ -342,15 +342,16 @@ public class DBManagerTest {
      */
     @Test
     public void testUpdateAssignedDoctorId() {
+        String did = String.valueOf(dbManager.getNextDID());
+        dbManager.addDoctor("first", "last", "address", "2023-01-01 10:00:00", "mental health");
+        String pid = String.valueOf(dbManager.getNextPID());
         dbManager.addPatient("someUser", "somePass", "Jack Reacher", "Maine");
-        dbManager.addDoctor("Jack", "Reacher", "USA", "2024-01-01 10:00:00", "dermatology");
-        String pid = String.valueOf(dbManager.getNextPID() - 1);
-        String docName = "Jack Reacher";
+        String docName = "first last";
         dbManager.updateAssignedDoctorId(pid, docName);
         HashMap<String, Object> userInfo = dbManager.getUserInfo("someUser", "somePass");
-        assertEquals(String.valueOf(dbManager.getNextDID() - 1), userInfo.get("assigned_doctor_id"));
-        dbManager.removePatient(pid, null);
-        dbManager.removeDoctor(String.valueOf(dbManager.getNextDID() - 1));
+        assertEquals(did, userInfo.get("assigned_doctor_id"));
+        dbManager.removePatient(pid, "someUser");
+        dbManager.removeDoctor(did);
     }
 
     /**
