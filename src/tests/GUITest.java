@@ -12,20 +12,6 @@ public class GUITest {
     private DBManager dbManager;
     static GUI gui;
 
-    //TODO wallahi we're cooked:
-    //Test for empty name input: Ensure that the validation method returns false when an empty string is provided as the name input.
-    //Test for name with special characters: Verify that the validation method returns false when the name contains special characters that are not allowed.
-    //Test for valid password: Add more test cases to cover different valid password combinations, such as passwords with various lengths, different combinations of uppercase and lowercase letters, numbers, and special characters.
-    //Test for empty password input: Ensure that the validation method returns false when an empty string is provided as the password input.
-    //Test for password with invalid special characters: Verify that the validation method returns false when the password contains special characters that are not allowed.
-    //Test for password with invalid length: Ensure that the validation method returns false when the password length is less than 8 characters or more than 45 characters.
-    //Test for valid username: Add test cases to verify that usernames containing valid characters are accepted.
-    //Test for invalid username: Ensure that usernames containing invalid characters are rejected.
-    //Test for successful login: Create test cases to simulate successful login scenarios, ensuring that the appropriate actions are taken when valid credentials are provided.
-    //Test for unsuccessful login: Add test cases to simulate unsuccessful login scenarios, ensuring that the appropriate error messages are displayed when invalid credentials are provided.
-    //Test for user signup: Verify that users can successfully sign up and that their information is correctly added to the database.
-    //Test for duplicate username during signup: Ensure that users cannot sign up with a username that already exists in the database.
-
     @Before
     public void setUp() {
         dbManager = new DBManager();
@@ -122,8 +108,8 @@ public class GUITest {
 
     /**
      * Tests a valid login using valid username and password
-     * @author Joshwa
      *
+     * @author Joshwa
      */
     @Test
     public void testSuccessfulLogin() {
@@ -140,29 +126,14 @@ public class GUITest {
 
     /**
      * Empty Password Test
-     * @author Joshwa
      *
+     * @author Joshwa
      */
     @Test
     public void validatePassword7() {
         String emptyPass = "";
         assertFalse("Password '" + emptyPass + "' shouln't be empty, but something has gone wrong.", gui.validatePassword(emptyPass));
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 }

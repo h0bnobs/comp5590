@@ -18,6 +18,20 @@ public class DBManagerTest {
     }
 
     /**
+     * Tests that isUserPresent correctly returns whether a patient is already in the db or not.
+     *
+     * @author max
+     */
+    @Test
+    public void testIsUserPresent() {
+        String pid = String.valueOf(dbManager.getNextPID());
+        dbManager.addPatient("someUser1", "somePass1", "Jack Reacher", "Maine");
+        assertTrue(dbManager.isUserPresent("someUser1", "somePass1"));
+        dbManager.removePatient(pid, "someUser1");
+        assertFalse(dbManager.isUserPresent("someUser1", "somePass1"));
+    }
+
+    /**
      * Tests that getAllPreviousAppointments correctly returns all previous appointments that the user booked.
      *
      * @author max

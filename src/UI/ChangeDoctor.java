@@ -4,15 +4,15 @@ import src.Database.DBManager;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.HashMap;
 import java.util.List;
 
+/**
+ * The window where the user can change their doctor.
+ */
 public class ChangeDoctor {
 
     private JFrame frame;
-    private final GUI gui = new GUI();
 
     /**
      * Lets the user change their current doctor to a different one.
@@ -68,42 +68,36 @@ public class ChangeDoctor {
         JButton goBackButton = new JButton("Go Back");
         frame.add(goBackButton, goBackButtonConstraint);
 
-        changeDoctorButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                String pass = JOptionPane.showInputDialog(frame, "Please enter your password to verify:");
+        changeDoctorButton.addActionListener(e -> {
+            String pass = JOptionPane.showInputDialog(frame, "Please enter your password to verify:");
 
-                if (pass == null || !pass.equals(userInformation.get("password"))) {
-                    JOptionPane.showMessageDialog(frame, "Incorrect password, try again.", "Error", JOptionPane.ERROR_MESSAGE);
-                    return;
-                }
-
-                String selectedDoctor = doctorList.getSelectedValue();
-
-                if (selectedDoctor == null) {
-                    JOptionPane.showMessageDialog(frame, "Please select a doctor from the list, or go back.", "Error", JOptionPane.ERROR_MESSAGE);
-                    return;
-                }
-
-                //update patient's assigned doctor id in the db.
-                String pid = (String) userInformation.get("pid");
-                dbManager.updateAssignedDoctorId(pid, selectedDoctor);
-                dbManager.addLog(pid, "Changed doctor");
-                dbManager.addMessage(userInformation, "You changed your doctor to: dr. " + selectedDoctor, (String) userInformation.get("pid"));
-                frame.dispose();
-                Profile pr = new Profile();
-                pr.openProfile((String) userInformation.get("username"), (String) userInformation.get("password"));
+            if (pass == null || !pass.equals(userInformation.get("password"))) {
+                JOptionPane.showMessageDialog(frame, "Incorrect password, try again.", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
             }
+
+            String selectedDoctor = doctorList.getSelectedValue();
+
+            if (selectedDoctor == null) {
+                JOptionPane.showMessageDialog(frame, "Please select a doctor from the list, or go back.", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            //update patient's assigned doctor id in the db.
+            String pid = (String) userInformation.get("pid");
+            dbManager.updateAssignedDoctorId(pid, selectedDoctor);
+            dbManager.addLog(pid, "Changed doctor");
+            dbManager.addMessage(userInformation, "You changed your doctor to: dr. " + selectedDoctor, (String) userInformation.get("pid"));
+            frame.dispose();
+            Profile pr = new Profile();
+            pr.openProfile((String) userInformation.get("username"), (String) userInformation.get("password"));
         });
 
-        goBackButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                dbManager.addLog((String) userInformation.get("pid"), "Cancelled doctor change");
-                frame.dispose();
-                Profile pr = new Profile();
-                pr.openProfile((String) userInformation.get("username"), (String) userInformation.get("password"));
-            }
+        goBackButton.addActionListener(e -> {
+            dbManager.addLog((String) userInformation.get("pid"), "Cancelled doctor change");
+            frame.dispose();
+            Profile pr = new Profile();
+            pr.openProfile((String) userInformation.get("username"), (String) userInformation.get("password"));
         });
 
         frame.setVisible(true);
