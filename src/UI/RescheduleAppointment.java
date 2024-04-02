@@ -4,17 +4,17 @@ import src.Database.DBManager;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+/**
+ * The window where a user can reschedule their appointments.
+ */
 public class RescheduleAppointment {
 
     private JFrame frame;
-    private final GUI gui = new GUI();
 
     /**
      * The window where the user can reschedule an appointment that they have booked by entering date and time.
@@ -92,110 +92,98 @@ public class RescheduleAppointment {
         JButton goBackButton = new JButton("Go Back");
         frame.add(goBackButton, goBackButtonConstraint);
 
-        nextButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                //all necessary information:
-                String day = (String) dayComboBox.getSelectedItem();
-                String year = (String) yearComboBox.getSelectedItem();
-                String month = (String) monthComboBox.getSelectedItem();
-                String dateSelected = year + "-" + month + "-" + day;
-                String pid = (String) userInformation.get("pid");
-                String did = (String) userInformation.get("assigned_doctor_id");
+        nextButton.addActionListener(e -> {
+            //all necessary information:
+            String day = (String) dayComboBox.getSelectedItem();
+            String year = (String) yearComboBox.getSelectedItem();
+            String month = (String) monthComboBox.getSelectedItem();
+            String dateSelected = year + "-" + month + "-" + day;
+            String pid = (String) userInformation.get("pid");
+            String did = (String) userInformation.get("assigned_doctor_id");
 
-                List<HashMap<String, Object>> appointments = dbManager.getFutureAppointmentsByFullDate(pid, did, dateSelected);
+            List<HashMap<String, Object>> appointments = dbManager.getFutureAppointmentsByFullDate(pid, did, dateSelected);
 
-                //if there are no appointments, show an error and return
-                //if not, display the appointments, asking for an appointment that will be changed.
-                if (appointments.isEmpty()) {
-                    int option = JOptionPane.showOptionDialog(null, "You have no booked appointments on this date.", "No Booked Appointments", JOptionPane.DEFAULT_OPTION, JOptionPane.ERROR_MESSAGE, null, new String[]{"OK"}, "OK");
-                    if (option == JOptionPane.OK_OPTION) {
-                        frame.dispose();
-                        rescheduleAppointmentInterface(userInformation);
-                    }
-                } else {
+            //if there are no appointments, show an error and return
+            //if not, display the appointments, asking for an appointment that will be changed.
+            if (appointments.isEmpty()) {
+                int option = JOptionPane.showOptionDialog(null, "You have no booked appointments on this date.", "No Booked Appointments", JOptionPane.DEFAULT_OPTION, JOptionPane.ERROR_MESSAGE, null, new String[]{"OK"}, "OK");
+                if (option == JOptionPane.OK_OPTION) {
                     frame.dispose();
-                    frame = new JFrame("Reschedule an appointment");
-                    frame.setSize(400, 450);
-                    frame.setLayout(new GridBagLayout());
-
-                    //panel
-                    GridBagConstraints panelConstraints = new GridBagConstraints();
-                    panelConstraints.gridx = 0;
-                    panelConstraints.gridy = 2;
-                    JPanel panel = new JPanel();
-                    frame.add(panel, panelConstraints);
-
-                    //list of appointments
-                    JList<String> appointmentsList = new JList<>();
-                    appointmentsList.setFixedCellHeight(30);
-                    appointmentsList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-
-                    DefaultListModel<String> listModel = new DefaultListModel<>();
-                    for (HashMap<String, Object> appointment : appointments) {
-                        //String visitDetails = appointment.get("visit_details") != null ? (String) appointment.get("visit_details") : "Doctor left no notes";
-                        //String prescriptions = appointment.get("prescriptions") != null ? (String) appointment.get("prescriptions") : "Nothing was prescribed";
-                        String element = (String) appointment.get("date_and_time");
-                        listModel.addElement(element);
-                    }
-                    appointmentsList.setModel(listModel);
-
-                    //scroll pane
-                    JScrollPane scrollPane = new JScrollPane(appointmentsList);
-                    scrollPane.setPreferredSize(new Dimension(250, 250));
-                    scrollPane.setBorder(BorderFactory.createTitledBorder("Appointments that can be rescheduled:"));
-                    GridBagConstraints scrollPaneConstraints = new GridBagConstraints();
-                    scrollPaneConstraints.gridx = 0;
-                    scrollPaneConstraints.gridy = 2;
-                    scrollPaneConstraints.anchor = GridBagConstraints.NORTH;
-                    scrollPaneConstraints.weighty = 10.0;
-                    frame.add(scrollPane, scrollPaneConstraints);
-
-                    //go back
-                    GridBagConstraints goBackButtonConstraint = new GridBagConstraints();
-                    goBackButtonConstraint.gridy = 6;
-                    goBackButtonConstraint.gridx = 0;
-                    JButton goBackButton = new JButton("Go Back");
-                    frame.add(goBackButton, goBackButtonConstraint);
-
-                    //reschedule button
-                    GridBagConstraints rescheduleButtonConstraint = new GridBagConstraints();
-                    rescheduleButtonConstraint.gridy = 5;
-                    rescheduleButtonConstraint.gridx = 0;
-                    JButton rescheduleButton = new JButton("Reschedule this appointment");
-                    frame.add(rescheduleButton, rescheduleButtonConstraint);
-
-                    //reschedule the highlighted appointment
-                    rescheduleButton.addActionListener(new ActionListener() {
-                        @Override
-                        public void actionPerformed(ActionEvent e) {
-                            frame.dispose();
-                            rescheduleAppointmentWithSelectedAppointment(userInformation, appointmentsList.getSelectedValue());
-                        }
-                    });
-
-                    //go back
-                    goBackButton.addActionListener(new ActionListener() {
-                        @Override
-                        public void actionPerformed(ActionEvent e) {
-                            frame.dispose();
-                            rescheduleAppointmentInterface(userInformation);
-                        }
-                    });
-
-                    frame.setVisible(true);
-
+                    rescheduleAppointmentInterface(userInformation);
                 }
+            } else {
+                frame.dispose();
+                frame = new JFrame("Reschedule an appointment");
+                frame.setSize(400, 450);
+                frame.setLayout(new GridBagLayout());
+
+                //panel
+                GridBagConstraints panelConstraints1 = new GridBagConstraints();
+                panelConstraints1.gridx = 0;
+                panelConstraints1.gridy = 2;
+                JPanel panel1 = new JPanel();
+                frame.add(panel1, panelConstraints1);
+
+                //list of appointments
+                JList<String> appointmentsList = new JList<>();
+                appointmentsList.setFixedCellHeight(30);
+                appointmentsList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+
+                DefaultListModel<String> listModel = new DefaultListModel<>();
+                for (HashMap<String, Object> appointment : appointments) {
+                    //String visitDetails = appointment.get("visit_details") != null ? (String) appointment.get("visit_details") : "Doctor left no notes";
+                    //String prescriptions = appointment.get("prescriptions") != null ? (String) appointment.get("prescriptions") : "Nothing was prescribed";
+                    String element = (String) appointment.get("date_and_time");
+                    listModel.addElement(element);
+                }
+                appointmentsList.setModel(listModel);
+
+                //scroll pane
+                JScrollPane scrollPane = new JScrollPane(appointmentsList);
+                scrollPane.setPreferredSize(new Dimension(250, 250));
+                scrollPane.setBorder(BorderFactory.createTitledBorder("Appointments that can be rescheduled:"));
+                GridBagConstraints scrollPaneConstraints = new GridBagConstraints();
+                scrollPaneConstraints.gridx = 0;
+                scrollPaneConstraints.gridy = 2;
+                scrollPaneConstraints.anchor = GridBagConstraints.NORTH;
+                scrollPaneConstraints.weighty = 10.0;
+                frame.add(scrollPane, scrollPaneConstraints);
+
+                //go back
+                GridBagConstraints goBackButtonConstraint1 = new GridBagConstraints();
+                goBackButtonConstraint1.gridy = 6;
+                goBackButtonConstraint1.gridx = 0;
+                JButton goBackButton1 = new JButton("Go Back");
+                frame.add(goBackButton1, goBackButtonConstraint1);
+
+                //reschedule button
+                GridBagConstraints rescheduleButtonConstraint = new GridBagConstraints();
+                rescheduleButtonConstraint.gridy = 5;
+                rescheduleButtonConstraint.gridx = 0;
+                JButton rescheduleButton = new JButton("Reschedule this appointment");
+                frame.add(rescheduleButton, rescheduleButtonConstraint);
+
+                //reschedule the highlighted appointment
+                rescheduleButton.addActionListener(e12 -> {
+                    frame.dispose();
+                    rescheduleAppointmentWithSelectedAppointment(userInformation, appointmentsList.getSelectedValue());
+                });
+
+                //go back
+                goBackButton1.addActionListener(e1 -> {
+                    frame.dispose();
+                    rescheduleAppointmentInterface(userInformation);
+                });
+
+                frame.setVisible(true);
+
             }
         });
 
-        goBackButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                frame.dispose();
-                Profile pr = new Profile();
-                pr.openProfile((String) userInformation.get("username"), (String) userInformation.get("password"));
-            }
+        goBackButton.addActionListener(e -> {
+            frame.dispose();
+            Profile pr = new Profile();
+            pr.openProfile((String) userInformation.get("username"), (String) userInformation.get("password"));
         });
 
         frame.add(panel, panelConstraints);
@@ -284,129 +272,117 @@ public class RescheduleAppointment {
         frame.add(panel, panelConstraints);
         frame.setVisible(true);
 
-        goBackButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                frame.dispose();
-                rescheduleAppointmentInterface(userInformation);
-            }
+        goBackButton.addActionListener(e -> {
+            frame.dispose();
+            rescheduleAppointmentInterface(userInformation);
         });
 
-        nextButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                frame.dispose();
-                frame = new JFrame("Reschedule an appointment");
-                frame.setSize(400, 600);
-                frame.setLayout(new GridBagLayout());
-                DBManager dbManager = new DBManager();
+        nextButton.addActionListener(e -> {
+            frame.dispose();
+            frame = new JFrame("Reschedule an appointment");
+            frame.setSize(400, 600);
+            frame.setLayout(new GridBagLayout());
+            DBManager dbManager1 = new DBManager();
 
-                //message
-                JLabel message = new JLabel("Dr. " + dbManager.getDoctorFullName((String) userInformation.get("assigned_doctor_id")) +
-                        " is free at the following times,");
+            //message
+            JLabel message1 = new JLabel("Dr. " + dbManager1.getDoctorFullName((String) userInformation.get("assigned_doctor_id")) +
+                    " is free at the following times,");
 
-                message.setFont(message.getFont().deriveFont(13.0f));
-                GridBagConstraints welcomeMessageConstraints = new GridBagConstraints();
-                welcomeMessageConstraints.gridx = 0;
-                welcomeMessageConstraints.gridy = 0;
-                welcomeMessageConstraints.anchor = GridBagConstraints.NORTH;
-                welcomeMessageConstraints.weighty = 1.0;
-                frame.add(message, welcomeMessageConstraints);
+            message1.setFont(message1.getFont().deriveFont(13.0f));
+            GridBagConstraints welcomeMessageConstraints1 = new GridBagConstraints();
+            welcomeMessageConstraints1.gridx = 0;
+            welcomeMessageConstraints1.gridy = 0;
+            welcomeMessageConstraints1.anchor = GridBagConstraints.NORTH;
+            welcomeMessageConstraints1.weighty = 1.0;
+            frame.add(message1, welcomeMessageConstraints1);
 
-                //second message
-                JLabel doctorName = new JLabel("please select one:");
-                doctorName.setFont(message.getFont());
-                GridBagConstraints doctorNameConstraints = new GridBagConstraints();
-                doctorNameConstraints.gridx = 0;
-                doctorNameConstraints.gridy = 1;
-                doctorNameConstraints.anchor = GridBagConstraints.NORTH;
-                doctorNameConstraints.weighty = 10.0;
-                frame.add(doctorName, doctorNameConstraints);
+            //second message
+            JLabel doctorName = new JLabel("please select one:");
+            doctorName.setFont(message1.getFont());
+            GridBagConstraints doctorNameConstraints = new GridBagConstraints();
+            doctorNameConstraints.gridx = 0;
+            doctorNameConstraints.gridy = 1;
+            doctorNameConstraints.anchor = GridBagConstraints.NORTH;
+            doctorNameConstraints.weighty = 10.0;
+            frame.add(doctorName, doctorNameConstraints);
 
-                //panel
-                GridBagConstraints panelConstraints = new GridBagConstraints();
-                panelConstraints.gridx = 0;
-                panelConstraints.gridy = 2;
-                JPanel panel = new JPanel();
+            //panel
+            GridBagConstraints panelConstraints1 = new GridBagConstraints();
+            panelConstraints1.gridx = 0;
+            panelConstraints1.gridy = 2;
+            JPanel panel1 = new JPanel();
 
-                String date = yearComboBox.getSelectedItem() + "-" + monthComboBox.getSelectedItem() + "-" + dayComboBox.getSelectedItem();
-                //System.out.println(date);
+            String date = yearComboBox.getSelectedItem() + "-" + monthComboBox.getSelectedItem() + "-" + dayComboBox.getSelectedItem();
+            //System.out.println(date);
 
-                ArrayList<String> notAvailableTimes = dbManager.doctorsBusyTimes((String) userInformation.get("assigned_doctor_id"), date);
-                System.out.println(notAvailableTimes);
+            ArrayList<String> notAvailableTimes = dbManager1.doctorsBusyTimes((String) userInformation.get("assigned_doctor_id"), date);
+            System.out.println(notAvailableTimes);
 
-                JList<String> messageList = new JList<>();
-                messageList.setFixedCellHeight(30);
-                messageList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+            JList<String> messageList = new JList<>();
+            messageList.setFixedCellHeight(30);
+            messageList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
-                ArrayList<String> possibleTimes = new ArrayList<>();
-                for (int hour = 9; hour <= 17; hour++) {
-                    String time = String.format("%02d", hour) + ":00:00";
-                    if (!notAvailableTimes.contains(time)) {
-                        possibleTimes.add(time);
-                    }
+            ArrayList<String> possibleTimes = new ArrayList<>();
+            for (int hour = 9; hour <= 17; hour++) {
+                String time = String.format("%02d", hour) + ":00:00";
+                if (!notAvailableTimes.contains(time)) {
+                    possibleTimes.add(time);
                 }
-                DefaultListModel<String> listModel = new DefaultListModel<>();
-                for (String time : possibleTimes) {
-                    if (time != null) {
-                        listModel.addElement(time);
-                    }
-                }
-                messageList.setModel(listModel);
-
-                JScrollPane scrollPane = new JScrollPane(messageList);
-                scrollPane.setPreferredSize(new Dimension(300, 300));
-                scrollPane.setBorder(BorderFactory.createTitledBorder("Available times:"));
-                GridBagConstraints scrollPaneConstraints = new GridBagConstraints();
-                scrollPaneConstraints.gridx = 0;
-                scrollPaneConstraints.gridy = 2;
-                scrollPaneConstraints.anchor = GridBagConstraints.NORTH;
-                scrollPaneConstraints.weighty = 10.0;
-                frame.add(scrollPane, scrollPaneConstraints);
-
-                //book appointment button
-                GridBagConstraints bookAppointmentButtonConstraint = new GridBagConstraints();
-                bookAppointmentButtonConstraint.gridy = 4;
-                bookAppointmentButtonConstraint.gridx = 0;
-                JButton bookAppointmentButton = new JButton("Book appointment");
-                frame.add(bookAppointmentButton, bookAppointmentButtonConstraint);
-
-                //go back button
-                GridBagConstraints goBackButtonConstraint = new GridBagConstraints();
-                goBackButtonConstraint.gridy = 5;
-                goBackButtonConstraint.gridx = 0;
-                JButton goBackButton = new JButton("Go back");
-                frame.add(goBackButton, goBackButtonConstraint);
-
-                goBackButton.addActionListener(new ActionListener() {
-                    @Override
-                    public void actionPerformed(ActionEvent e) {
-                        frame.dispose();
-                        rescheduleAppointmentWithSelectedAppointment(userInformation, selectedAppointment);
-                    }
-                });
-
-                bookAppointmentButton.addActionListener(new ActionListener() {
-                    @Override
-                    public void actionPerformed(ActionEvent e) {
-                        String pid = (String) userInformation.get("pid");
-                        String did = (String) userInformation.get("assigned_doctor_id");
-                        dbManager.removeAppointment(did, pid, selectedAppointment);
-                        dbManager.addAppointment(did, pid, date + " " + messageList.getSelectedValue());
-                        dbManager.addLog(pid, "Rescheduled an appointment");
-                        dbManager.addMessage(userInformation, "You rescheduled your appointment with dr: " +
-                                dbManager.getDoctorFullName((String) userInformation.get("assigned_doctor_id")) + " to " +
-                                date + " " + messageList.getSelectedValue(), pid);
-                        frame.dispose();
-
-                        Profile pr = new Profile();
-                        pr.openProfile((String) userInformation.get("username"), (String) userInformation.get("password"));
-                    }
-                });
-
-                frame.add(panel, panelConstraints);
-                frame.setVisible(true);
             }
+            DefaultListModel<String> listModel = new DefaultListModel<>();
+            for (String time : possibleTimes) {
+                if (time != null) {
+                    listModel.addElement(time);
+                }
+            }
+            messageList.setModel(listModel);
+
+            JScrollPane scrollPane = new JScrollPane(messageList);
+            scrollPane.setPreferredSize(new Dimension(300, 300));
+            scrollPane.setBorder(BorderFactory.createTitledBorder("Available times:"));
+            GridBagConstraints scrollPaneConstraints = new GridBagConstraints();
+            scrollPaneConstraints.gridx = 0;
+            scrollPaneConstraints.gridy = 2;
+            scrollPaneConstraints.anchor = GridBagConstraints.NORTH;
+            scrollPaneConstraints.weighty = 10.0;
+            frame.add(scrollPane, scrollPaneConstraints);
+
+            //book appointment button
+            GridBagConstraints bookAppointmentButtonConstraint = new GridBagConstraints();
+            bookAppointmentButtonConstraint.gridy = 4;
+            bookAppointmentButtonConstraint.gridx = 0;
+            JButton bookAppointmentButton = new JButton("Book appointment");
+            frame.add(bookAppointmentButton, bookAppointmentButtonConstraint);
+
+            //go back button
+            GridBagConstraints goBackButtonConstraint1 = new GridBagConstraints();
+            goBackButtonConstraint1.gridy = 5;
+            goBackButtonConstraint1.gridx = 0;
+            JButton goBackButton1 = new JButton("Go back");
+            frame.add(goBackButton1, goBackButtonConstraint1);
+
+            goBackButton1.addActionListener(e12 -> {
+                frame.dispose();
+                rescheduleAppointmentWithSelectedAppointment(userInformation, selectedAppointment);
+            });
+
+            bookAppointmentButton.addActionListener(e1 -> {
+                String pid = (String) userInformation.get("pid");
+                String did = (String) userInformation.get("assigned_doctor_id");
+                dbManager1.removeAppointment(did, pid, selectedAppointment);
+                dbManager1.addAppointment(did, pid, date + " " + messageList.getSelectedValue());
+                dbManager1.addLog(pid, "Rescheduled an appointment");
+                dbManager1.addMessage(userInformation, "You rescheduled your appointment with dr: " +
+                        dbManager1.getDoctorFullName((String) userInformation.get("assigned_doctor_id")) + " to " +
+                        date + " " + messageList.getSelectedValue(), pid);
+                frame.dispose();
+
+                Profile pr = new Profile();
+                pr.openProfile((String) userInformation.get("username"), (String) userInformation.get("password"));
+            });
+
+            frame.add(panel1, panelConstraints1);
+            frame.setVisible(true);
         });
 
         frame.setVisible(true);

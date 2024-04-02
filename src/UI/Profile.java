@@ -4,19 +4,18 @@ import src.Database.DBManager;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.HashMap;
 import java.util.List;
 
+/**
+ * The profile window, where the user can see messages and access features.
+ */
 public class Profile {
 
     private JFrame frame;
-    private final GUI gui = new GUI();
-
 
     /**
-     * The profile section of the project.
+     * Opens the user's profile page where they can see messages and access all features.
      *
      * @param username The username of the current user.
      * @author max, josh
@@ -40,7 +39,6 @@ public class Profile {
         welcomeMessageConstraints.anchor = GridBagConstraints.CENTER;
         frame.add(welcomeMessage, welcomeMessageConstraints);
 
-        //TODO: make it so that newest messages appear at the top of the list.
         //list of messages
         //gets all the user's messages
         List<String> userMessages = database.getUserMessages((String) userInformation.get("pid"));
@@ -58,7 +56,7 @@ public class Profile {
         messageList.setModel(listModel);
 
         JScrollPane scrollPane = new JScrollPane(messageList);
-        scrollPane.setPreferredSize(new Dimension(580, 150));
+        scrollPane.setPreferredSize(new Dimension(580, 300));
         scrollPane.setBorder(BorderFactory.createTitledBorder("Messages"));
         GridBagConstraints scrollPaneConstraints = new GridBagConstraints();
         scrollPaneConstraints.gridx = 0;
@@ -79,7 +77,7 @@ public class Profile {
         //logout button
         GridBagConstraints logoutButtonConstraints = new GridBagConstraints();
         logoutButtonConstraints.gridx = 0;
-        logoutButtonConstraints.gridy = 7;
+        logoutButtonConstraints.gridy = 8;
         logoutButtonConstraints.anchor = GridBagConstraints.CENTER;
         JButton logoutButton = new JButton("Logout");
         frame.add(logoutButton, logoutButtonConstraints);
@@ -124,64 +122,65 @@ public class Profile {
         JButton rescheduleAppointmentButton = new JButton("Reschedule a Booking");
         frame.add(rescheduleAppointmentButton, rescheduleAppointmentConstraints);
 
+        //view all doctors button
+        GridBagConstraints viewAllDoctorsConstraints = new GridBagConstraints();
+        viewAllDoctorsConstraints.gridx = 0;
+        viewAllDoctorsConstraints.gridy = 7;
+        viewAllDoctorsConstraints.anchor = GridBagConstraints.CENTER;
+        JButton viewAllDoctorsButton = new JButton("View all doctors");
+        frame.add(viewAllDoctorsButton, viewAllDoctorsConstraints);
+
+        //view all doctors
+        viewAllDoctorsButton.addActionListener(e -> {
+            database.addLog((String) userInformation.get("pid"), "Viewed all doctors");
+            frame.dispose();
+            ViewAllDoctors v = new ViewAllDoctors();
+            v.viewDoctors(userInformation);
+        });
+
         //logout button action
-        logoutButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                database.addLog((String) userInformation.get("pid"), "Logged out");
-                frame.dispose();
-                LoginAndSignup l = new LoginAndSignup();
-                l.loginInterface();
-            }
+        logoutButton.addActionListener(e -> {
+            database.addLog((String) userInformation.get("pid"), "Logged out");
+            frame.dispose();
+            LoginAndSignup l = new LoginAndSignup();
+            l.loginInterface();
         });
 
         //change doctor button action
-        changeDoctorButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                database.addLog((String) userInformation.get("pid"), "Started to change doctor");
-                frame.dispose();
-                ChangeDoctor c = new ChangeDoctor();
-                c.changeDoctorInterface(userInformation);
-            }
+        changeDoctorButton.addActionListener(e -> {
+            database.addLog((String) userInformation.get("pid"), "Started to change doctor");
+            frame.dispose();
+            ChangeDoctor c = new ChangeDoctor();
+            c.changeDoctorInterface(userInformation);
         });
 
         //book appointment button action
-        bookAppointmentButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                frame.dispose();
-                BookAppointment b = new BookAppointment();
-                b.bookAppointmentInterface(userInformation);
-            }
+        bookAppointmentButton.addActionListener(e -> {
+            frame.dispose();
+            BookAppointment b = new BookAppointment();
+            b.bookAppointmentInterface(userInformation);
         });
 
-        viewFutureAppointmentsButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                frame.dispose();
-                ViewBookings v = new ViewBookings();
-                v.viewFutureAppointmentsInterface(userInformation);
-            }
+        //view future appointments.
+        viewFutureAppointmentsButton.addActionListener(e -> {
+            frame.dispose();
+            ViewBookings v = new ViewBookings();
+            v.viewFutureAppointmentsInterface(userInformation);
         });
 
-        viewPreviousAppointmentsButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                frame.dispose();
-                ViewBookings v = new ViewBookings();
-                v.viewPreviousAppointmentsInterface(userInformation);
-            }
+        //view previous appointments.
+        viewPreviousAppointmentsButton.addActionListener(e -> {
+            frame.dispose();
+            ViewBookings v = new ViewBookings();
+            v.viewPreviousAppointmentsInterface(userInformation);
         });
 
-        rescheduleAppointmentButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                frame.dispose();
-                RescheduleAppointment r = new RescheduleAppointment();
-                r.rescheduleAppointmentInterface(userInformation);
-                //rescheduleAppointmentInterface(userInformation);
-            }
+        //reschedule appointments.
+        rescheduleAppointmentButton.addActionListener(e -> {
+            frame.dispose();
+            RescheduleAppointment r = new RescheduleAppointment();
+            r.rescheduleAppointmentInterface(userInformation);
+            //rescheduleAppointmentInterface(userInformation);
         });
 
         frame.setVisible(true);

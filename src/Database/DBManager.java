@@ -7,8 +7,11 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+/**
+ * Methods that interact with the database.
+ */
 public class DBManager {
-    private static Connection connection;
+    private static final Connection connection;
 
     static {
         try {
@@ -17,6 +20,8 @@ public class DBManager {
             throw new RuntimeException(e);
         }
     }
+
+//---------------------------------------------------------------------------------------------------------------------------------------------
 
     /**
      * Gets all the user's previous appointments that they booked.
@@ -52,6 +57,8 @@ public class DBManager {
 
         return appointments;
     }
+
+//---------------------------------------------------------------------------------------------------------------------------------------------
 
     /**
      * Gets all the user's future appointments that they have booked.
@@ -91,15 +98,17 @@ public class DBManager {
         return appointments;
     }
 
+//---------------------------------------------------------------------------------------------------------------------------------------------
+
     /**
      * Gets all the user's future appointments that they have booked.
      *
-     * @param pid
-     * @param did
-     * @param yearAndMonth
+     * @param pid           the current user's pid.
+     * @param did           the current user's doctor id.
+     * @param yearMonthDate The full date (year, month then date)
      * @return
      */
-    public List<HashMap<String, Object>> getFutureAppointmentsByFullDate(String pid, String did, String yearAndMonth) {
+    public List<HashMap<String, Object>> getFutureAppointmentsByFullDate(String pid, String did, String yearMonthDate) {
         List<HashMap<String, Object>> appointments = new ArrayList<>();
         try {
             LocalDateTime now = LocalDateTime.now();
@@ -110,7 +119,7 @@ public class DBManager {
             PreparedStatement preparedStatement = connection.prepareStatement(query);
             preparedStatement.setString(1, pid);
             preparedStatement.setString(2, did);
-            preparedStatement.setString(3, yearAndMonth);
+            preparedStatement.setString(3, yearMonthDate);
             preparedStatement.setString(4, currentDateTime);
 
             ResultSet results = preparedStatement.executeQuery();
