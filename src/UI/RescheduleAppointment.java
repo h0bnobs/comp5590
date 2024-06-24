@@ -1,6 +1,6 @@
 package src.UI;
 
-import src.Database.DBManager;
+import src.Database.SQLiteExample;
 
 import javax.swing.*;
 import java.awt.*;
@@ -26,7 +26,7 @@ public class RescheduleAppointment {
         frame = new JFrame("Reschedule an appointment");
         frame.setSize(400, 300);
         frame.setLayout(new GridBagLayout());
-        DBManager dbManager = new DBManager();
+        SQLiteExample dbManager = new SQLiteExample();
 
         //message
         JLabel message = new JLabel("What date is your appointment?");
@@ -203,7 +203,7 @@ public class RescheduleAppointment {
         frame = new JFrame("Reschedule an appointment");
         frame.setSize(400, 300);
         frame.setLayout(new GridBagLayout());
-        DBManager dbManager = new DBManager();
+        SQLiteExample dbManager = new SQLiteExample();
 
         //message
         JLabel message = new JLabel("What date do you want to reschedule to?");
@@ -282,7 +282,7 @@ public class RescheduleAppointment {
             frame = new JFrame("Reschedule an appointment");
             frame.setSize(400, 600);
             frame.setLayout(new GridBagLayout());
-            DBManager dbManager1 = new DBManager();
+            SQLiteExample dbManager1 = new SQLiteExample();
 
             //message
             JLabel message1 = new JLabel("Dr. " + dbManager1.getDoctorFullName((String) userInformation.get("assigned_doctor_id")) +
