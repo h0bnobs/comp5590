@@ -1,6 +1,6 @@
 package src.UI;
 
-import src.Database.DBManager;
+import src.Database.SQLiteExample;
 
 import javax.swing.*;
 import java.awt.*;
@@ -26,7 +26,7 @@ public class ViewBookings {
         frame = new JFrame("View future appointments");
         frame.setSize(400, 450);
         frame.setLayout(new GridBagLayout());
-        DBManager dbManager = new DBManager();
+        SQLiteExample dbManager = new SQLiteExample();
 
         //message
         JLabel message = new JLabel("Your previous bookings:");
@@ -168,7 +168,7 @@ public class ViewBookings {
         frame = new JFrame("View future appointments");
         frame.setSize(400, 300);
         frame.setLayout(new GridBagLayout());
-        DBManager dbManager = new DBManager();
+        SQLiteExample dbManager = new SQLiteExample();
 
         //message
         JLabel message = new JLabel("Enter a month and year to search for bookings:");

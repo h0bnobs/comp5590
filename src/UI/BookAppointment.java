@@ -1,6 +1,6 @@
 package src.UI;
 
-import src.Database.DBManager;
+import src.Database.SQLiteExample;
 
 import javax.swing.*;
 import java.awt.*;
@@ -26,7 +26,7 @@ public class BookAppointment {
         frame = new JFrame("Book an appointment");
         frame.setSize(400, 300);
         frame.setLayout(new GridBagLayout());
-        DBManager dbManager = new DBManager();
+        SQLiteExample dbManager = new SQLiteExample();
 
         //message
         JLabel message = new JLabel("Please select a date to book an appointment with");
@@ -109,7 +109,7 @@ public class BookAppointment {
 
         //next button action
         nextButton.addActionListener(e -> {
-            String day = "0" + dayComboBox.getSelectedItem();
+            String day = (String) dayComboBox.getSelectedItem();
             String year = (String) yearComboBox.getSelectedItem();
             String month = "";
             if (Objects.equals(monthComboBox.getSelectedItem(), "10") || Objects.equals(monthComboBox.getSelectedItem(), "11")
@@ -123,7 +123,7 @@ public class BookAppointment {
             frame = new JFrame("Book an appointment");
             frame.setSize(400, 600);
             frame.setLayout(new GridBagLayout());
-            DBManager dbManager1 = new DBManager();
+            SQLiteExample dbManager1 = new SQLiteExample();
 
             //message
             JLabel message1 = new JLabel("Dr. " + dbManager1.getDoctorFullName((String) userInformation.get("assigned_doctor_id")) +

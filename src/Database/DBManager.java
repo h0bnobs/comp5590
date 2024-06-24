@@ -15,10 +15,27 @@ public class DBManager {
 
     static {
         try {
-            connection = DriverManager.getConnection("jdbc:mysql://localhost/comp5590?user=1&password=1");
+            connection = DriverManager.getConnection("jdbc:sqlite:./database.db");
+            //connection = DriverManager.getConnection("jdbc:mysql://localhost/comp5590?user=1&password=1");
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    /**
+     * Tests the connection to the db.
+     * @return true if there is a connection to the db.
+     */
+    public boolean testConn() {
+        try {
+            String query = "SELECT * FROM patients";
+            PreparedStatement preparedStatement = connection.prepareStatement(query);
+            ResultSet results = preparedStatement.executeQuery();
+            return results.next();
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+        return false;
     }
 
 //---------------------------------------------------------------------------------------------------------------------------------------------
@@ -148,7 +165,7 @@ public class DBManager {
      */
     public void addAppointment(String did, String pid, String date) {
         try {
-            String query = "INSERT INTO `comp5590`.`appointments` (`did`, `pid`, `date_and_time`) VALUES (?, ?, ?)";
+            String query = "INSERT INTO appointments (`did`, `pid`, `date_and_time`) VALUES (?, ?, ?)";
             PreparedStatement preparedStatement = connection.prepareStatement(query);
             preparedStatement.setString(1, did);
             preparedStatement.setString(2, pid);
@@ -411,7 +428,7 @@ public class DBManager {
      */
     public void addLog(String pid, String message) {
         try {
-            String query = "INSERT INTO `comp5590`.`logs` (`functionality_accessed`, `date_and_time`, `pid`) VALUE (?, ?, ?)";
+            String query = "INSERT INTO logs (`functionality_accessed`, `date_and_time`, `pid`) VALUE (?, ?, ?)";
             PreparedStatement preparedStatement = connection.prepareStatement(query);
             preparedStatement.setString(1, message);
 
@@ -592,7 +609,7 @@ public class DBManager {
      */
     public void addDoctor(String firstName, String lastName, String address, String startDate, String specialistArea) {
         try {
-            String query = "INSERT INTO `comp5590`.`doctors` (`did`, `first_name`, `last_name`, `address`, `start_date`, `specialist_area`) VALUES (?, ?, ?, ?, ?, ?)";
+            String query = "INSERT INTO doctors (`did`, `first_name`, `last_name`, `address`, `start_date`, `specialist_area`) VALUES (?, ?, ?, ?, ?, ?)";
             PreparedStatement preparedStatement = connection.prepareStatement(query);
             int did = getNextDID();
 
@@ -624,7 +641,7 @@ public class DBManager {
         try {
             //String query = "SELECT * FROM patients WHERE username = ? AND password = ?";
             int pid = getNextPID();
-            String query = "INSERT INTO `comp5590`.`patients` (`pid`, `name`, `address`, `username`, `password`, `assigned_doctor_id`) VALUES (?, ?, ?, ?, ?, ?)";
+            String query = "INSERT INTO patients (`pid`, `name`, `address`, `username`, `password`, `assigned_doctor_id`) VALUES (?, ?, ?, ?, ?, ?)";
             PreparedStatement preparedStatement = connection.prepareStatement(query);
             preparedStatement.setString(1, String.valueOf(pid));
             preparedStatement.setString(2, name);

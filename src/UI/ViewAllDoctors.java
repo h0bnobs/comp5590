@@ -1,6 +1,6 @@
 package src.UI;
 
-import src.Database.DBManager;
+import src.Database.SQLiteExample;
 
 import javax.swing.*;
 import java.awt.*;
@@ -23,7 +23,7 @@ public class ViewAllDoctors {
         frame = new JFrame("View all doctors");
         frame.setSize(700, 700);
         frame.setLayout(new GridBagLayout());
-        DBManager dbManager = new DBManager();
+        SQLiteExample dbManager = new SQLiteExample();
         List<HashMap<String, Object>> doctors = dbManager.getAllDoctors();
 
         String[] columnNames = {"DID", "First Name", "Last Name", "Address", "Start Date", "Specialist Area"};

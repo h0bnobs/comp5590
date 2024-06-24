@@ -1,6 +1,6 @@
 package src.UI;
 
-import src.Database.DBManager;
+import src.Database.SQLiteExample;
 
 import javax.swing.*;
 import java.awt.*;
@@ -31,7 +31,7 @@ public class LoginAndSignup {
         frame = new JFrame("Sign up");
         frame.setSize(400, 300);
         frame.setLayout(new GridBagLayout());
-        DBManager database = new DBManager();
+        SQLiteExample database = new SQLiteExample();
 
         GridBagConstraints enternameLabelConstraint = new GridBagConstraints();
         enternameLabelConstraint.gridx = 0;
@@ -197,7 +197,7 @@ public class LoginAndSignup {
         loginButton.addActionListener(event -> {
             String username = usernameTextField.getText();
             String password = passwordTextField.getText();
-            DBManager database = new DBManager();
+            SQLiteExample database = new SQLiteExample();
             System.out.println(username);
             System.out.println(password);
 
@@ -250,7 +250,7 @@ public class LoginAndSignup {
         GridBagConstraints gbc = new GridBagConstraints();
 
         // Add doctors from the database to the list
-        List<String> doctorNames = DBManager.getAllDoctorNames();
+        List<String> doctorNames = SQLiteExample.getAllDoctorNames();
         String[] doctors = doctorNames.toArray(new String[0]);
         JList<String> doctorList = new JList<>(doctors);
         JScrollPane scrollPane = new JScrollPane(doctorList);
@@ -278,7 +278,7 @@ public class LoginAndSignup {
             String selectedDoctor = doctorList.getSelectedValue();
 
             //add user to the db using the things they inputted in the signup window
-            DBManager db = new DBManager();
+            SQLiteExample db = new SQLiteExample();
             String u = newUser.get(0);
             String p = newUser.get(1);
             String name = newUser.get(2);

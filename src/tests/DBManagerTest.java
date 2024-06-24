@@ -3,6 +3,7 @@ package src.tests;
 import org.junit.Before;
 import org.junit.Test;
 import src.Database.DBManager;
+import src.Database.SQLiteExample;
 
 import java.util.HashMap;
 import java.util.List;
@@ -10,11 +11,11 @@ import java.util.List;
 import static org.junit.Assert.*;
 
 public class DBManagerTest {
-    private DBManager dbManager;
+    private SQLiteExample dbManager;
 
     @Before
     public void setUp() {
-        dbManager = new DBManager();
+        dbManager = new SQLiteExample();
     }
 
     /**

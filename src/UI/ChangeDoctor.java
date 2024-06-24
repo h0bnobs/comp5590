@@ -1,6 +1,6 @@
 package src.UI;
 
-import src.Database.DBManager;
+import src.Database.SQLiteExample;
 
 import javax.swing.*;
 import java.awt.*;
@@ -24,12 +24,12 @@ public class ChangeDoctor {
         frame = new JFrame("Change your doctor");
         frame.setSize(400, 300);
         frame.setLayout(new GridBagLayout());
-        DBManager dbManager = new DBManager();
+        SQLiteExample dbManager = new SQLiteExample();
 
         String currentDoctorName = dbManager.getDoctorFullName((String) userInformation.get("assigned_doctor_id"));
 
         //add the doctors from the database to the list
-        List<String> doctorNames = DBManager.getAllDoctorNames();
+        List<String> doctorNames = SQLiteExample.getAllDoctorNames();
 
         //remove the patient's current doctor from the list of new doctor's to select
         doctorNames.removeIf(doctor -> doctor.equals(currentDoctorName));
@@ -81,16 +81,28 @@ public class ChangeDoctor {
             if (selectedDoctor == null) {
                 JOptionPane.showMessageDialog(frame, "Please select a doctor from the list, or go back.", "Error", JOptionPane.ERROR_MESSAGE);
                 return;
-            }
+            } else {
+                //update patient's assigned doctor id in the db.
+                String pid = (String) userInformation.get("pid");
+                String didBeforeChange = (String) userInformation.get("assigned_doctor_id");
 
-            //update patient's assigned doctor id in the db.
-            String pid = (String) userInformation.get("pid");
-            dbManager.updateAssignedDoctorId(pid, selectedDoctor);
-            dbManager.addLog(pid, "Changed doctor");
-            dbManager.addMessage(userInformation, "You changed your doctor to: dr. " + selectedDoctor, (String) userInformation.get("pid"));
-            frame.dispose();
-            Profile pr = new Profile();
-            pr.openProfile((String) userInformation.get("username"), (String) userInformation.get("password"));
+                List<HashMap<String, Object>> appointments = dbManager.getAllFutureAppointments(pid, didBeforeChange);
+
+                List<String> dates = appointments.stream()
+                        .map(appointment -> appointment.get("date_and_time").toString())
+                        .toList();
+
+                for (String date : dates) {
+                    dbManager.removeAppointment(didBeforeChange, pid, date);
+                }
+
+                dbManager.updateAssignedDoctorId(pid, selectedDoctor);
+                dbManager.addLog(pid, "Changed doctor");
+                dbManager.addMessage(userInformation, "You changed your doctor to: dr. " + selectedDoctor, (String) userInformation.get("pid"));
+                frame.dispose();
+                Profile pr = new Profile();
+                pr.openProfile((String) userInformation.get("username"), (String) userInformation.get("password"));
+            }
         });
 
         goBackButton.addActionListener(e -> {

@@ -1,6 +1,6 @@
 package src.UI;
 
-import src.Database.DBManager;
+import src.Database.SQLiteExample;
 
 import javax.swing.*;
 import java.awt.*;
@@ -24,7 +24,7 @@ public class Profile {
         frame = new JFrame("Profile");
         frame.setSize(600, 700);
         frame.setLayout(new GridBagLayout());
-        DBManager database = new DBManager();
+        SQLiteExample database = new SQLiteExample();
         HashMap<String, Object> userInformation = database.getUserInfo(username, password);
 
         JPanel panel = new JPanel();
