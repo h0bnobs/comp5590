@@ -1,16 +1,13 @@
 package src.UI;
 
-import src.Database.SQLiteExample;
+import src.Database.DatabaseInteract;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.HashMap;
 
-/**
- * The first window, where the user can either log in or sign up.
- */
 public class LoginAndSignup {
 
     private JFrame frame;
@@ -27,203 +24,154 @@ public class LoginAndSignup {
      *
      * @author max
      */
-    protected void signupInterface() {
+    public void signupInterface() {
         frame = new JFrame("Sign up");
         frame.setSize(400, 300);
         frame.setLayout(new GridBagLayout());
-        SQLiteExample database = new SQLiteExample();
 
-        GridBagConstraints enternameLabelConstraint = new GridBagConstraints();
-        enternameLabelConstraint.gridx = 0;
-        enternameLabelConstraint.gridy = 0;
-        JLabel enterNameLabel = new JLabel("Enter your name: ");
-        frame.add(enterNameLabel, enternameLabelConstraint);
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(5, 5, 5, 5);
 
-        GridBagConstraints enterNameTextFieldConstraint = new GridBagConstraints();
-        enterNameTextFieldConstraint.gridx = 1;
-        enterNameTextFieldConstraint.gridy = 0;
-        JTextField nameTextField = new JTextField(10);
-        frame.add(nameTextField, enterNameTextFieldConstraint);
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        frame.add(new JLabel("Enter your name: "), gbc);
 
-        GridBagConstraints enterAddressLabelConstraint = new GridBagConstraints();
-        enterAddressLabelConstraint.gridx = 0;
-        enterAddressLabelConstraint.gridy = 1;
-        JLabel enterAddressLabel = new JLabel("Enter your address: ");
-        frame.add(enterAddressLabel, enterAddressLabelConstraint);
+        gbc.gridx = 1;
+        JTextField nameTextField = new JTextField(15);
+        frame.add(nameTextField, gbc);
 
-        GridBagConstraints enterAddressTextFieldConstraint = new GridBagConstraints();
-        enterAddressTextFieldConstraint.gridx = 1;
-        enterAddressTextFieldConstraint.gridy = 1;
-        JTextField addressTextField = new JTextField(10);
-        frame.add(addressTextField, enterAddressTextFieldConstraint);
+        gbc.gridx = 0;
+        gbc.gridy = 1;
+        frame.add(new JLabel("Enter your address: "), gbc);
 
-        GridBagConstraints enterUsernameLabelConstraint = new GridBagConstraints();
-        enterUsernameLabelConstraint.gridx = 0;
-        enterUsernameLabelConstraint.gridy = 3;
-        JLabel enterUsernameLabel = new JLabel("Enter a username: ");
-        frame.add(enterUsernameLabel, enterUsernameLabelConstraint);
+        gbc.gridx = 1;
+        JTextField addressTextField = new JTextField(15);
+        frame.add(addressTextField, gbc);
 
-        GridBagConstraints enterUsernameTextFieldConstraint = new GridBagConstraints();
-        enterUsernameTextFieldConstraint.gridx = 1;
-        enterUsernameTextFieldConstraint.gridy = 3;
-        usernameTextField = new JTextField(10);
-        frame.add(usernameTextField, enterUsernameTextFieldConstraint);
+        gbc.gridx = 0;
+        gbc.gridy = 2;
+        frame.add(new JLabel("Enter a username: "), gbc);
 
-        GridBagConstraints enterPasswordLabelConstraint = new GridBagConstraints();
-        enterPasswordLabelConstraint.gridx = 0;
-        enterPasswordLabelConstraint.gridy = 4;
-        JLabel enterPasswordLabel = new JLabel("Enter a password: ");
-        frame.add(enterPasswordLabel, enterPasswordLabelConstraint);
+        gbc.gridx = 1;
+        usernameTextField = new JTextField(15);
+        frame.add(usernameTextField, gbc);
 
-        GridBagConstraints enterPasswordTextFieldConstraint = new GridBagConstraints();
-        enterPasswordTextFieldConstraint.gridx = 1;
-        enterPasswordTextFieldConstraint.gridy = 4;
-        passwordTextField = new JPasswordField(10);
-        frame.add(passwordTextField, enterPasswordTextFieldConstraint);
+        gbc.gridx = 0;
+        gbc.gridy = 3;
+        frame.add(new JLabel("Enter a password: "), gbc);
 
-        GridBagConstraints signUpButtonConstraint = new GridBagConstraints();
-        signUpButtonConstraint.gridx = 2;
-        signUpButtonConstraint.gridy = 7;
-        JButton signupButton = new JButton("Next");
-        frame.add(signupButton, signUpButtonConstraint);
+        gbc.gridx = 1;
+        passwordTextField = new JPasswordField(15);
+        frame.add(passwordTextField, gbc);
 
-        GridBagConstraints goBackButtonConstraint = new GridBagConstraints();
-        goBackButtonConstraint.gridx = 0;
-        goBackButtonConstraint.gridy = 7;
-        JButton goBackButton = new JButton("Go back");
-        frame.add(goBackButton, goBackButtonConstraint);
+        gbc.gridx = 1;
+        gbc.gridy = 4;
+        gbc.anchor = GridBagConstraints.CENTER;
+        JButton signupButton = new JButton("Sign Up");
+        frame.add(signupButton, gbc);
 
-        //check for existing user
-        //if not found, add it to db and login.
-        signupButton.addActionListener(e -> {
-            String username = usernameTextField.getText();
-            String password = passwordTextField.getText();
-            String name = nameTextField.getText();
-
-            //Checks to make sure given name doesn't contain digits.
-            if (!gui.validateName(name)) {
-                JOptionPane.showMessageDialog(frame, "Your name cannot contain anything of numerical value", "Error", JOptionPane.ERROR_MESSAGE);
-                return;
-            }
-
-            //Checks to make sure the given password is valid.
-            if (!gui.validatePassword(password)) {
-                JOptionPane.showMessageDialog(frame, "Password Must Contain: \n• Eight or more Characters long \n• One or more Uppercase characters \n• One or more Lowercase characters \n• One or more numerical characters \n• One or more special Character e.g @, ! or $", "Error", JOptionPane.ERROR_MESSAGE);
-                return;
-            }
-
-            LinkedHashMap<Integer, String> newUser = new LinkedHashMap<>();
-            newUser.put(0, usernameTextField.getText());
-            newUser.put(1, passwordTextField.getText());
-            newUser.put(2, nameTextField.getText());
-            newUser.put(3, addressTextField.getText());
-
-            //if the username doesn't exist, create user
-            if (!database.isUsernameDuplicate(username)) {
-                //create user in the database.
-                frame.dispose();
-                doctorSelection(username, password, newUser);
-            }
-        });
+        gbc.gridx = 0;
+        gbc.gridy = 4;
+        JButton goBackButton = new JButton("Go Back");
+        frame.add(goBackButton, gbc);
 
         goBackButton.addActionListener(e -> {
             frame.dispose();
             loginInterface();
         });
+
+        signupButton.addActionListener(e -> {
+            String username = usernameTextField.getText();
+            String password = passwordTextField.getText();
+            String name = nameTextField.getText();
+            String address = addressTextField.getText();
+
+            if (!gui.validateName(name)) {
+                JOptionPane.showMessageDialog(frame, "Name cannot contain numerical values", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            if (!gui.validatePassword(password)) {
+                JOptionPane.showMessageDialog(frame, "Password must be at least 8 characters long with upper, lower, numeric, and special characters.", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            DatabaseInteract database = new DatabaseInteract();
+            if (!database.isUsernameDuplicate(username)) {
+                frame.dispose();
+                doctorSelection(username, password, name, address);
+            }
+        });
+
         frame.setVisible(true);
     }
 
 //---------------------------------------------------------------------------------------------------------------------------------------------
 
     /**
-     * The login part of the project.
+     * The login window.
      *
      * @author max
      */
     public void loginInterface() {
         frame = new JFrame("Login");
-
-        // TODO: Think about changing the size of the window.
-        // TODO: Also think about changing the look of the whole thing because it's ugly. Doesn't give extra marks.
-        frame.setSize(400, 300);
+        frame.setSize(400, 200);
         frame.setLayout(new GridBagLayout());
 
-        GridBagConstraints constraint = new GridBagConstraints();
-        constraint.gridx = 0;
-        constraint.gridy = 0;
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(5, 5, 5, 5);
 
-        JLabel label = new JLabel("Login: ");
-        frame.add(label, constraint);
+        JButton weatherButton = new JButton("Grab weather");
+        gbc.gridx = 0;
+        gbc.gridy = 3;
+        gbc.anchor = GridBagConstraints.NORTHWEST;
+        frame.add(weatherButton, gbc);
 
-        constraint.gridx = 1;
-        usernameTextField = new JTextField(5);
-        frame.add(usernameTextField, constraint);
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        frame.add(new JLabel("Username: "), gbc);
 
-        constraint.gridx = 2;
-        passwordTextField = new JPasswordField(5);
-        frame.add(passwordTextField, constraint);
+        gbc.gridx = 1;
+        usernameTextField = new JTextField(15);
+        frame.add(usernameTextField, gbc);
 
-        constraint.gridx = 3;
+        gbc.gridx = 0;
+        gbc.gridy = 1;
+        frame.add(new JLabel("Password: "), gbc);
+
+        gbc.gridx = 1;
+        passwordTextField = new JPasswordField(15);
+        frame.add(passwordTextField, gbc);
+
+        gbc.gridx = 1;
+        gbc.gridy = 2;
+        gbc.anchor = GridBagConstraints.CENTER;
         JButton loginButton = new JButton("Login");
-        frame.add(loginButton, constraint);
+        frame.add(loginButton, gbc);
 
-        GridBagConstraints signUpLabelConstraint = new GridBagConstraints();
-        signUpLabelConstraint.gridx = -1;
-        signUpLabelConstraint.gridy = 2;
-        signUpLabelConstraint.gridwidth = 3;
-        signUpLabelConstraint.anchor = GridBagConstraints.WEST;
-        JLabel signUpLabel = new JLabel("Sign up here: ");
-        frame.add(signUpLabel, signUpLabelConstraint);
+        gbc.gridx = 0;
+        gbc.gridy = 2;
+        JButton signupButton = new JButton("Sign Up");
+        frame.add(signupButton, gbc);
 
-        GridBagConstraints signUpButtonConstraint = new GridBagConstraints();
-        signUpButtonConstraint.gridx = -1;
-        signUpButtonConstraint.gridy = 3;
-        signUpButtonConstraint.gridwidth = 3;
-        signUpButtonConstraint.anchor = GridBagConstraints.WEST;
-        JButton signupButton = new JButton("Sign up");
-        frame.add(signupButton, signUpButtonConstraint);
-
-        tryAgainLabel = new JLabel("Try again");
-        GridBagConstraints tryAgainLabelConstraint = new GridBagConstraints();
-        tryAgainLabelConstraint.gridx = 3;
-        tryAgainLabelConstraint.gridy = 2;
-
-        signupButton.addActionListener(e -> {
-            frame.dispose();
-            signupInterface();
-        });
-
-        //once the login button is pressed its gonna check the username and password entered against the db
-        loginButton.addActionListener(event -> {
+        loginButton.addActionListener(e -> {
             String username = usernameTextField.getText();
             String password = passwordTextField.getText();
-            SQLiteExample database = new SQLiteExample();
-            System.out.println(username);
-            System.out.println(password);
+            DatabaseInteract database = new DatabaseInteract();
 
-            //if the username and password match the login frame is disposed and the profile one is formed.
-            if (username.length() <= 0 || password.length() <= 0) {
-                JOptionPane.showMessageDialog(frame, "Username and/or Password required", "Error", JOptionPane.ERROR_MESSAGE);
+            if (database.isUserPresent(username, password)) {
+                frame.dispose();
+                Profile profile = new Profile();
+                profile.openProfile(username, password);
             } else {
-                //if the username and password match the login frame is disposed and the profile one is formed.
-                if (database.isUserPresent(username, password)) {
-                    HashMap<String, Object> u = database.getUserInfo(username, password);
-                    database.addLog((String) u.get("pid"), "Logged in");
-                    frame.dispose();
-                    Profile pr = new Profile();
-                    pr.openProfile(username, password);
-                } else {
-                    frame.add(tryAgainLabel, tryAgainLabelConstraint);
-                    frame.revalidate();
-                    frame.repaint();
-                    System.out.println("try again");
-                    usernameTextField.setText("");
-                    passwordTextField.setText("");
-                }
+                JOptionPane.showMessageDialog(frame, "Invalid username or password", "Error", JOptionPane.ERROR_MESSAGE);
             }
         });
 
-        //go to the sign-up window
+        weatherButton.addActionListener(e -> {
+            System.out.println(WeatherApp.run());
+        });
+
         signupButton.addActionListener(e -> {
             frame.dispose();
             signupInterface();
@@ -239,66 +187,55 @@ public class LoginAndSignup {
      *
      * @param username the patient's username.
      * @param password the patient's password.
-     * @param newUser  all data about the patient.
+     * @param name     the patient's name.
+     * @param address  the patient's address.
      * @author josh, max
      */
-    public void doctorSelection(String username, String password, LinkedHashMap<Integer, String> newUser) {
+    public void doctorSelection(String username, String password, String name, String address) {
         frame = new JFrame("Select Doctor");
         frame.setSize(400, 300);
         frame.setLayout(new GridBagLayout());
 
         GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(5, 5, 5, 5);
 
-        // Add doctors from the database to the list
-        List<String> doctorNames = SQLiteExample.getAllDoctorNames();
+        List<String> doctorNames = DatabaseInteract.getAllDoctorNames();
         String[] doctors = doctorNames.toArray(new String[0]);
         JList<String> doctorList = new JList<>(doctors);
         JScrollPane scrollPane = new JScrollPane(doctorList);
 
-        // List model
         gbc.gridx = 0;
         gbc.gridy = 0;
         gbc.gridwidth = 2;
-        gbc.fill = GridBagConstraints.BOTH;
         gbc.weightx = 1.0;
         gbc.weighty = 1.0;
+        gbc.fill = GridBagConstraints.BOTH;
         frame.add(scrollPane, gbc);
 
-        JButton selectButton = new JButton("Choose doctor and login");
-
-        // Select button model
+        gbc.gridx = 0;
         gbc.gridy = 1;
         gbc.gridwidth = 1;
         gbc.fill = GridBagConstraints.NONE;
         gbc.weighty = 0.0;
+        JButton selectButton = new JButton("Select Doctor");
         frame.add(selectButton, gbc);
 
-        // Select button Action
         selectButton.addActionListener(e -> {
             String selectedDoctor = doctorList.getSelectedValue();
+            DatabaseInteract database = new DatabaseInteract();
 
-            //add user to the db using the things they inputted in the signup window
-            SQLiteExample db = new SQLiteExample();
-            String u = newUser.get(0);
-            String p = newUser.get(1);
-            String name = newUser.get(2);
-            String address = newUser.get(3);
-            db.addPatient(u, p, name, address);
-
-            //update patient's assigned doctor id in the db.
-            HashMap<String, Object> user = db.getUserInfo(username, password);
+            database.addPatient(username, password, name, address);
+            HashMap<String, Object> user = database.getUserInfo(username, password);
             String pid = (String) user.get("pid");
-            db.updateAssignedDoctorId(pid, selectedDoctor);
-
-            //add a log and the welcome message.
-            db.addLog(pid, "Signed up");
-            //"Welcome " + userInformation.get("name") + ", you are now signed up with dr. " + getDoctorFullName(did);
-            db.addMessage(user, "Welcome " + user.get("name") + ", you are now signed up with dr. " + selectedDoctor, (String) user.get("pid"));
+            database.updateAssignedDoctorId(pid, selectedDoctor);
+            database.addLog(pid, "Signed up");
+            database.addMessage(user, "Welcome " + user.get("name") + ", you are now signed up with Dr. " + selectedDoctor, (String) user.get("pid"));
 
             frame.dispose();
-            Profile pr = new Profile();
-            pr.openProfile(username, password);
+            Profile profile = new Profile();
+            profile.openProfile(username, password);
         });
+
         frame.setVisible(true);
     }
 }

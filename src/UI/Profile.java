@@ -1,9 +1,11 @@
 package src.UI;
 
-import src.Database.SQLiteExample;
+import src.Database.DatabaseInteract;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
@@ -24,7 +26,7 @@ public class Profile {
         frame = new JFrame("Profile");
         frame.setSize(600, 700);
         frame.setLayout(new GridBagLayout());
-        SQLiteExample database = new SQLiteExample();
+        DatabaseInteract database = new DatabaseInteract();
         HashMap<String, Object> userInformation = database.getUserInfo(username, password);
 
         JPanel panel = new JPanel();
@@ -42,20 +44,9 @@ public class Profile {
         //list of messages
         //gets all the user's messages
         List<String> userMessages = database.getUserMessages((String) userInformation.get("pid"));
+        //Collections.reverse(userMessages);
 
-        JList<String> messageList = new JList<>();
-        messageList.setFixedCellHeight(30);
-        messageList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-
-        DefaultListModel<String> listModel = new DefaultListModel<>();
-        for (int i = userMessages.size() - 1; i >= 0; i--) {
-            if (userMessages.get(i) != null) {
-                listModel.addElement("- " + userMessages.get(i));
-            }
-        }
-        messageList.setModel(listModel);
-
-        JScrollPane scrollPane = new JScrollPane(messageList);
+        JScrollPane scrollPane = getScrollPane(userMessages);
         scrollPane.setPreferredSize(new Dimension(580, 300));
         scrollPane.setBorder(BorderFactory.createTitledBorder("Messages"));
         GridBagConstraints scrollPaneConstraints = new GridBagConstraints();
@@ -184,6 +175,23 @@ public class Profile {
         });
 
         frame.setVisible(true);
+    }
+
+    private static JScrollPane getScrollPane(List<String> userMessages) {
+        JList<String> messageList = new JList<>();
+        messageList.setFixedCellHeight(30);
+        messageList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+
+        DefaultListModel<String> listModel = new DefaultListModel<>();
+        for (int i = userMessages.size() - 1; i >= 0; i--) {
+            if (userMessages.get(i) != null) {
+                listModel.addElement("- " + userMessages.get(i));
+            }
+        }
+        messageList.setModel(listModel);
+
+        JScrollPane scrollPane = new JScrollPane(messageList);
+        return scrollPane;
     }
 
 }

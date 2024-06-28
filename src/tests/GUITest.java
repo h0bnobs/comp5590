@@ -2,19 +2,19 @@ package src.tests;
 
 import org.junit.Before;
 import org.junit.Test;
-import src.Database.DBManager;
+import src.Database.DatabaseInteract;
 import src.UI.GUI;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 public class GUITest {
-    private DBManager dbManager;
+    private DatabaseInteract dbManager;
     static GUI gui;
 
     @Before
     public void setUp() {
-        dbManager = new DBManager();
+        dbManager = new DatabaseInteract();
         gui = new GUI();
     }
 

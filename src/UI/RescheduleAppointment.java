@@ -1,6 +1,6 @@
 package src.UI;
 
-import src.Database.SQLiteExample;
+import src.Database.DatabaseInteract;
 
 import javax.swing.*;
 import java.awt.*;
@@ -26,7 +26,7 @@ public class RescheduleAppointment {
         frame = new JFrame("Reschedule an appointment");
         frame.setSize(400, 300);
         frame.setLayout(new GridBagLayout());
-        SQLiteExample dbManager = new SQLiteExample();
+        DatabaseInteract dbManager = new DatabaseInteract();
 
         //message
         JLabel message = new JLabel("What date is your appointment?");
@@ -180,6 +180,10 @@ public class RescheduleAppointment {
             }
         });
 
+        goBackButtons(userInformation, panelConstraints, panel, goBackButton, frame);
+    }
+
+    static void goBackButtons(HashMap<String, Object> userInformation, GridBagConstraints panelConstraints, JPanel panel, JButton goBackButton, JFrame frame) {
         goBackButton.addActionListener(e -> {
             frame.dispose();
             Profile pr = new Profile();
@@ -203,7 +207,7 @@ public class RescheduleAppointment {
         frame = new JFrame("Reschedule an appointment");
         frame.setSize(400, 300);
         frame.setLayout(new GridBagLayout());
-        SQLiteExample dbManager = new SQLiteExample();
+        DatabaseInteract dbManager = new DatabaseInteract();
 
         //message
         JLabel message = new JLabel("What date do you want to reschedule to?");
@@ -282,7 +286,7 @@ public class RescheduleAppointment {
             frame = new JFrame("Reschedule an appointment");
             frame.setSize(400, 600);
             frame.setLayout(new GridBagLayout());
-            SQLiteExample dbManager1 = new SQLiteExample();
+            DatabaseInteract dbManager1 = new DatabaseInteract();
 
             //message
             JLabel message1 = new JLabel("Dr. " + dbManager1.getDoctorFullName((String) userInformation.get("assigned_doctor_id")) +
@@ -318,24 +322,7 @@ public class RescheduleAppointment {
             ArrayList<String> notAvailableTimes = dbManager1.doctorsBusyTimes((String) userInformation.get("assigned_doctor_id"), date);
             System.out.println(notAvailableTimes);
 
-            JList<String> messageList = new JList<>();
-            messageList.setFixedCellHeight(30);
-            messageList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-
-            ArrayList<String> possibleTimes = new ArrayList<>();
-            for (int hour = 9; hour <= 17; hour++) {
-                String time = String.format("%02d", hour) + ":00:00";
-                if (!notAvailableTimes.contains(time)) {
-                    possibleTimes.add(time);
-                }
-            }
-            DefaultListModel<String> listModel = new DefaultListModel<>();
-            for (String time : possibleTimes) {
-                if (time != null) {
-                    listModel.addElement(time);
-                }
-            }
-            messageList.setModel(listModel);
+            JList<String> messageList = getStringJList(notAvailableTimes);
 
             JScrollPane scrollPane = new JScrollPane(messageList);
             scrollPane.setPreferredSize(new Dimension(300, 300));
@@ -386,5 +373,27 @@ public class RescheduleAppointment {
         });
 
         frame.setVisible(true);
+    }
+
+    private static JList<String> getStringJList(ArrayList<String> notAvailableTimes) {
+        JList<String> messageList = new JList<>();
+        messageList.setFixedCellHeight(30);
+        messageList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+
+        ArrayList<String> possibleTimes = new ArrayList<>();
+        for (int hour = 9; hour <= 17; hour++) {
+            String time = String.format("%02d", hour) + ":00:00";
+            if (!notAvailableTimes.contains(time)) {
+                possibleTimes.add(time);
+            }
+        }
+        DefaultListModel<String> listModel = new DefaultListModel<>();
+        for (String time : possibleTimes) {
+            if (time != null) {
+                listModel.addElement(time);
+            }
+        }
+        messageList.setModel(listModel);
+        return messageList;
     }
 }

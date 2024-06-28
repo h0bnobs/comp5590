@@ -1,6 +1,6 @@
 package src.UI;
 
-import src.Database.SQLiteExample;
+import src.Database.DatabaseInteract;
 
 import javax.swing.*;
 import java.awt.*;
@@ -26,7 +26,7 @@ public class BookAppointment {
         frame = new JFrame("Book an appointment");
         frame.setSize(400, 300);
         frame.setLayout(new GridBagLayout());
-        SQLiteExample dbManager = new SQLiteExample();
+        DatabaseInteract dbManager = new DatabaseInteract();
 
         //message
         JLabel message = new JLabel("Please select a date to book an appointment with");
@@ -123,7 +123,7 @@ public class BookAppointment {
             frame = new JFrame("Book an appointment");
             frame.setSize(400, 600);
             frame.setLayout(new GridBagLayout());
-            SQLiteExample dbManager1 = new SQLiteExample();
+            DatabaseInteract dbManager1 = new DatabaseInteract();
 
             //message
             JLabel message1 = new JLabel("Dr. " + dbManager1.getDoctorFullName((String) userInformation.get("assigned_doctor_id")) +
@@ -229,13 +229,6 @@ public class BookAppointment {
 
         });
 
-        goBackButton.addActionListener(e -> {
-            frame.dispose();
-            Profile pr = new Profile();
-            pr.openProfile((String) userInformation.get("username"), (String) userInformation.get("password"));
-        });
-
-        frame.add(panel, panelConstraints);
-        frame.setVisible(true);
+        RescheduleAppointment.goBackButtons(userInformation, panelConstraints, panel, goBackButton, frame);
     }
 }

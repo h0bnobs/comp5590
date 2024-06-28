@@ -2,8 +2,7 @@ package src.tests;
 
 import org.junit.Before;
 import org.junit.Test;
-import src.Database.DBManager;
-import src.Database.SQLiteExample;
+import src.Database.DatabaseInteract;
 
 import java.util.HashMap;
 import java.util.List;
@@ -11,11 +10,12 @@ import java.util.List;
 import static org.junit.Assert.*;
 
 public class DBManagerTest {
-    private SQLiteExample dbManager;
+    private DatabaseInteract dbManager;
 
     @Before
     public void setUp() {
-        dbManager = new SQLiteExample();
+        dbManager = new DatabaseInteract();
+        assertTrue(dbManager.testConn());
     }
 
     /**
@@ -365,7 +365,7 @@ public class DBManagerTest {
         dbManager.addDoctor("Bobby", "Shmurda", "Goudhurst", "2024-03-10 09:00:00", "cardiology");
         dbManager.addDoctor("Jack", "Reacher", "USA", "2024-01-01 10:00:00", "dermatology");
 
-        List<String> doctorNames = DBManager.getAllDoctorNames();
+        List<String> doctorNames = DatabaseInteract.getAllDoctorNames();
         assertTrue(doctorNames.contains("Bobby Shmurda"));
         assertTrue(doctorNames.contains("Jack Reacher"));
 

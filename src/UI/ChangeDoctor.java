@@ -1,6 +1,6 @@
 package src.UI;
 
-import src.Database.SQLiteExample;
+import src.Database.DatabaseInteract;
 
 import javax.swing.*;
 import java.awt.*;
@@ -24,12 +24,12 @@ public class ChangeDoctor {
         frame = new JFrame("Change your doctor");
         frame.setSize(400, 300);
         frame.setLayout(new GridBagLayout());
-        SQLiteExample dbManager = new SQLiteExample();
+        DatabaseInteract dbManager = new DatabaseInteract();
 
         String currentDoctorName = dbManager.getDoctorFullName((String) userInformation.get("assigned_doctor_id"));
 
         //add the doctors from the database to the list
-        List<String> doctorNames = SQLiteExample.getAllDoctorNames();
+        List<String> doctorNames = DatabaseInteract.getAllDoctorNames();
 
         //remove the patient's current doctor from the list of new doctor's to select
         doctorNames.removeIf(doctor -> doctor.equals(currentDoctorName));
