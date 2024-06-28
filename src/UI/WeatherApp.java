@@ -1,5 +1,8 @@
 package src.UI;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
@@ -9,7 +12,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
 public class WeatherApp {
-    private static final String API_KEY = "113a3c4cc48abdf621c1405906aace2c";
+    private static final String API_KEY = apiKey();
     private static final String BASE_URL = "http://api.openweathermap.org/data/2.5/weather";
 
     public static String run() {
@@ -51,5 +54,20 @@ public class WeatherApp {
 
     private static String getStringValue(JsonObject jsonObject, String key) {
         return jsonObject != null && jsonObject.has(key) ? jsonObject.get(key).getAsString() : "N/A";
+    }
+
+    private static String apiKey() {
+        String file = "api_key";
+        String line = "";
+        try (BufferedReader r = new BufferedReader(new FileReader(file))) {
+            line = r.readLine();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        //System.out.println(line);
+        if (line == null) {
+            System.err.println("Remember to make a file called api_file and in the first line paste your api key.");
+        }
+        return line;
     }
 }
